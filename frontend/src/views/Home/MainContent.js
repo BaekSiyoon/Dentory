@@ -9,7 +9,12 @@ const MainContent = () => {
   const { Content } = Layout;
 
   return (
-    <Content style={{ padding: "30px", flex: 1 }}>
+    <Content
+      style={{
+        padding: "30px",
+        flex: 1,
+      }}
+    >
       <div style={{ padding: "40px", flex: 1, position: "relative" }}>
         {/* 고정된 텍스트 영역 */}
         <div
@@ -25,6 +30,18 @@ const MainContent = () => {
           }}
         >
           <p>고정된 텍스트 영역</p>
+          <Button
+            type="default"
+            size="middle"
+            variant="solid"
+            style={{
+              backgroundColor: "#F7F5EE !important",
+              border: "1px solid #ccc !important",
+              borderRadius: "4px !important",
+            }}
+          >
+            찾기
+          </Button>
         </div>
         <Carousel autoplay>
           {/* 첫 번째 슬라이드 */}
@@ -112,7 +129,10 @@ const MainContent = () => {
                     height: "400px",
                   }}
                   cover={
-                    <img alt="example4" src="/images/backgroundImg4.jpg" />
+                    <img
+                      alt="example4"
+                      src={`${process.env.PUBLIC_URL}/images/backgroundImg4.jpg`}
+                    />
                   }
                 >
                   <h3>이미지 4</h3>

@@ -26,3 +26,6 @@ Thumbs.db
 
 # 로그 파일 무시
 *.log
+
+# .vscode 파일 무시
+.vscode/

@@ -25,7 +25,14 @@ const MainHome = () => {
   }, []);
 
   return (
-    <Layout style={{ minHeight: "100vh", backgroundColor: "#F7F5EE" }}>
+    <Layout
+      style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "#F7F5EE",
+      }}
+    >
       <Header style={{ padding: "0 20px", backgroundColor: "#F7F5EE" }}>
         <Row align="middle" style={{ height: "100%", alignContent: "center" }}>
           <Col
