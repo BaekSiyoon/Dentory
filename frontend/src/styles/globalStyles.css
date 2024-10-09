@@ -1,0 +1,20 @@
+/* styles/global.css */
+
+/* 선택 된 메뉴 밑줄 색 변경 */
+.homeMenuBorderBottomColor .ant-menu-item-selected::after {
+  border-bottom: 2px solid #fcbf5d !important;
+}
+/* 호버시 밑줄 색 변경  */
+.homeMenuBorderBottomColor .ant-menu-item:hover::after {
+  border-bottom: 2px solid #fcbf5d !important;
+}
+
+/* 호버 시 텍스트 색상 변경 */
+.homeMenuItemColor:hover {
+  color: #fcbf5d !important;
+}
+
+/* 선택된 메뉴 아이템 텍스트 색상 변경 */
+.homeMenuItemColor.ant-menu-item-selected {
+  color: #fcbf5d !important;
+}

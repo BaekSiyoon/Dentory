@@ -1,0 +1,6 @@
+# Gradle generated files
+.gradle/
+build/
+*.bin
+*.lock
+*.properties
