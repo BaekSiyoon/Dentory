@@ -29,17 +29,8 @@ const MainContent = () => {
             fontSize: "24px",
           }}
         >
-          <p>고정된 텍스트 영역</p>
-          <Button
-            type="default"
-            size="middle"
-            variant="solid"
-            style={{
-              backgroundColor: "#F7F5EE !important",
-              border: "1px solid #ccc !important",
-              borderRadius: "4px !important",
-            }}
-          >
+          <p>텍스트 영역</p>
+          <Button type="default" size="middle" variant="solid" id="dentalBtn">
             찾기
           </Button>
         </div>

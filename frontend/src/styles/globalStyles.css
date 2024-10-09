@@ -18,3 +18,26 @@
 .homeMenuItemColor.ant-menu-item-selected {
   color: #fcbf5d !important;
 }
+
+#dentalBtn {
+  background-color: #fcbf5d !important;
+  border: none !important;
+  border-radius: 4px !important;
+  color: black !important;
+  width: 100px;
+  height: 36px;
+  font-size: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-weight: 500;
+}
+
+#dentalBtn:hover {
+  background-color: #cb6c2b !important;
+  color: white !important;
+}
+
+#dentalBtn:active {
+  background-color: #cb6c2b !important;
+  color: white !important;
+}
