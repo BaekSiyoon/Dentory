@@ -23,7 +23,7 @@ const MainMenu = () => {
     },
     {
       key: "2",
-      label: "정보",
+      label: "치과",
       className: "homeMenuItemColor",
       path: "/dentalInfo", // 이동할 경로
     },

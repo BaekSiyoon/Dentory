@@ -15,7 +15,7 @@ import {
 const DentalInfo = () => {
   const columns = [
     {
-      title: "병원",
+      title: "치과",
       dataIndex: "name",
       key: "name",
       render: (text) => <a>{text}</a>,
@@ -59,7 +59,7 @@ const DentalInfo = () => {
   const data = [
     {
       key: "1",
-      name: "가나 병원",
+      name: "가나 치과",
       time: "진료 종료 / 09:30에 진료 시작",
       address: "서울 강남구 역삼동 1532-121",
       review: "방문자 리뷰 60 / 블로그 리뷰 25",
@@ -67,7 +67,7 @@ const DentalInfo = () => {
     },
     {
       key: "2",
-      name: "다라 병원",
+      name: "다라 치과",
       time: "진료 종료 / 09:30에 진료 시작",
       address: "서울 강남구 논현동 1032-121",
       review: "방문자 리뷰 80 / 블로그 리뷰 75",
