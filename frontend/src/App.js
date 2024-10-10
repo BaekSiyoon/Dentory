@@ -12,16 +12,20 @@ import DentalInfo from "./views/Dental/DentalInfo";
 function App() {
   const { Content } = Layout;
   return (
-    <Layout style={{ backgroundColor: "#F7F5EE" }}>
+    <>
       <MainMenu />
-      <Content>
+      <Content
+        style={{
+          padding: "30px",
+        }}
+      >
         <Routes>
           <Route path="/" element={<MainContent />} />
           <Route path="/dentalInfo" element={<DentalInfo />} />
         </Routes>
       </Content>
       <MainFooter />
-    </Layout>
+    </>
   );
 }
 
