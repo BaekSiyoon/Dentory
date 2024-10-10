@@ -21,16 +21,21 @@ const MainHome = () => {
   const menuItems = [
     {
       key: "1",
-      label: "정보",
+      label: "home",
       className: "homeMenuItemColor",
     },
     {
       key: "2",
-      label: "커뮤니티",
+      label: "정보",
       className: "homeMenuItemColor",
     },
     {
       key: "3",
+      label: "커뮤니티",
+      className: "homeMenuItemColor",
+    },
+    {
+      key: "4",
       label: "마이페이지",
       className: "homeMenuItemColor",
     },
