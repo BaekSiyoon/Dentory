@@ -9,11 +9,61 @@
   border-bottom: 2px solid #fcbf5d !important;
 }
 
+.homeMenuItemColor {
+  padding: 5px !important;
+  margin: 0 20px;
+  color: black;
+}
+/* 모바일 일때  */
+@media (max-width: 767px) {
+  .homeMenuBorderBottomColor {
+    border-right: 0px !important;
+  }
+
+  .homeMenuItemColor {
+    padding: 5px !important;
+    margin: 0 20px;
+    color: black;
+    display: flex;
+    align-items: center;
+    border-right: 0px !important;
+  }
+
+  /* 호버 시 텍스트 색상 변경 */
+  .homeMenuItemColor:hover {
+    color: #cb6c2b !important;
+    background-color: #fcbf5d !important;
+  }
+
+  /* 선택된 메뉴 아이템 텍스트 색상 변경 */
+  .homeMenuItemColor.ant-menu-item-selected {
+    color: #cb6c2b !important;
+    background-color: #fcbf5d !important;
+  }
+}
+
+/* 모바일 일때  */
+/* 호버 시 텍스트 색상 변경 */
+/* @media (max-width: 767px) {
+  .homeMenuItemColor:hover {
+    color: #cb6c2b !important;
+    background-color: #fcbf5d !important;
+  }
+}
+/* 선택된 메뉴 아이템 텍스트 색상 변경 */
+@media (max-width: 767px) {
+  .homeMenuItemColor.ant-menu-item-selected {
+    color: #cb6c2b !important;
+    background-color: #fcbf5d !important;
+  }
+}
+*/
+
+/* 웹 일때 */
 /* 호버 시 텍스트 색상 변경 */
 .homeMenuItemColor:hover {
   color: #fcbf5d !important;
 }
-
 /* 선택된 메뉴 아이템 텍스트 색상 변경 */
 .homeMenuItemColor.ant-menu-item-selected {
   color: #fcbf5d !important;
