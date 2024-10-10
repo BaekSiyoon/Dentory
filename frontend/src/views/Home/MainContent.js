@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "../../styles/globalStyles.css"; // 공통 CSS 파일
-import { Layout, Row, Col } from "antd";
-import { Carousel } from "antd";
-import { Card } from "antd";
-import { Button } from "antd";
+import { Layout, Row, Col, Carousel, Card, Button } from "antd";
+import apiClient from "../../Common/ApiClient";
 
 const MainContent = () => {
   const { Content } = Layout;
+
+  useEffect(() => {
+    // GET 요청을 보냄
+    const fetchData = async () => {
+      try {
+        const response = await apiClient.get("/test"); // /test 경로로 GET 요청
+        // console.log("API 호출 성공:", response.data);
+      } catch (error) {
+        // console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <Content
