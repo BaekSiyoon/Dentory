@@ -3,7 +3,12 @@
 build/
 *.bin
 *.lock
-*.properties
+
+# Ignore gradle-wrapper.properties
+gradle-wrapper.properties
+
+# Don't ignore application.properties
+!src/main/resources/application.properties
 
 # 모든 서브디렉토리의 yarn.lock 파일 무시
 */**/yarn.lock
