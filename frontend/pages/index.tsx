@@ -3,10 +3,9 @@ import MainContent from "./home/mainContent";
 
 export default function Home() {
   return (
-    <>
+    <div className="h-screen overflow-hidden">
       <MainMenu />
-      <MainContent/>
-      <main style={{ padding: "20px" }}></main>
-    </>
+      <MainContent />
+    </div>
   );
 }

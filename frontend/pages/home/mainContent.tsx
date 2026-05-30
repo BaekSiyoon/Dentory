@@ -29,10 +29,22 @@ const MainContent = () => {
   };
 
   const slides = [
-    {image: "/images/home/banner1.png"},
-    {image: "/images/home/banner2.png"},
-    {image: "/images/home/banner3.png"},
-    {image: "/images/home/banner4.png"}
+    {
+      webImage: "/images/home/webBanner1.png",
+      mobileImage: "/images/home/mobileBanner1.png",
+    },
+    {
+      webImage: "/images/home/webBanner2.png",
+      mobileImage: "/images/home/mobileBanner2.png",
+    },
+    {
+      webImage: "/images/home/webBanner3.png",
+      mobileImage: "/images/home/mobileBanner3.png",
+    },
+    {
+      webImage: "/images/home/webBanner4.png",
+      mobileImage: "/images/home/mobileBanner4.png",
+    },
   ];
 
   return (
@@ -47,19 +59,26 @@ const MainContent = () => {
           clickable: true,
         }}
         loop
-        className="w-full"
+        className="w-full home-swiper"
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
-            <div className="relative h-[520px] w-full overflow-hidden md:h-[620px]">
-              <img
-                src={slide.image}
-                className="h-full w-full object-cover"
-              />
+            <div className="h-[calc(100vh-70px)]">
+              <picture>
+                <source
+                  media="(max-width: 767px)"
+                  srcSet={slide.mobileImage}
+                />
+                <img
+                  src={slide.webImage}
+                  alt=""
+                />
+              </picture>
+
               <div className="absolute inset-0" />
               <div className="absolute inset-0 flex items-center">
                 <div className="mx-auto w-full max-w-7xl px-4 md:px-8 lg:px-12">
-                  <div className="mt-110 flex flex-col gap-3 sm:flex-row">
+                  <div className="mt-120 ml-10 flex flex-col gap-3 sm:flex-row">
                     <button
                       type="button"
                       onClick={dentalBtnClick}

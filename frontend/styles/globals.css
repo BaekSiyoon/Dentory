@@ -101,3 +101,13 @@ a {
 .animate-slide-in {
   animation: slide-in 0.3s ease-out forwards;
 }
+
+.home-swiper {
+  --swiper-pagination-color: #FCBF5D;
+  --swiper-pagination-bullet-inactive-color: #d1c8bc;
+  --swiper-pagination-bullet-inactive-opacity: 1;
+}
+
+.home-swiper .swiper-pagination {
+  bottom: 40px !important;
+}
