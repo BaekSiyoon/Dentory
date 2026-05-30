@@ -7,7 +7,7 @@ const MainFooter = () => {
     <>
     <footer style={{ textAlign: "center", backgroundColor: "#F7F5EE" }}> 
         {/* Footer */}
-      </footer>
+    </footer>
     </>
   );
 };
