@@ -7,7 +7,7 @@ const MainMenu = () => {
   const router = useRouter();
   const [visible, setVisible] = React.useState(false);
 
-  // 웹일때 닫음 Drawer
+   // 웹일때 닫음 Drawer
   React.useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
 
@@ -26,10 +26,15 @@ const MainMenu = () => {
     };
   }, []);
 
-  const menuItems = [
+  const webMenuItems = [
+    { key: "2", label: "치과 정보", path: "/dentalInfo" },
+    { key: "3", label: "커뮤니티", path: "/community" },
+  ];
+
+  const mobileMenuItems = [
     { key: "1", label: "Home", path: "/" },
     { key: "2", label: "치과 정보", path: "/dentalInfo" },
-    { key: "3", label: "커뮤니티", path: "/" },
+    { key: "3", label: "커뮤니티", path: "/community" },
   ];
 
   const handleMenuClick = (path: string) => {
@@ -41,16 +46,28 @@ const MainMenu = () => {
     <>
       <header className="h-20 bg-[#FEF7EB] px-4 md:px-[60px] border-b border-[#eadfd3]">
         <div className="flex h-full items-center justify-between">
-          <div className="flex items-center">
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="
+              flex items-center
+              appearance-none border-none bg-transparent p-0
+              text-[#6B5A50]
+              outline-none shadow-none
+              cursor-pointer
+              hover:text-[#fcbf5d]
+              active:text-[#e9a83f]
+            "
+          >
             <img
               src="/images/homeLogo.png"
               alt="Logo"
               className="h-20 w-20 md:h-24 md:w-24 object-contain"
             />
-            <span className="text-[24px] md:text-[30px] font-extrabold leading-none text-[#6B5A50]">
+            <span className="text-[24px] md:text-[30px] font-extrabold leading-none">
               Dentory
             </span>
-          </div>
+          </button>
 
           <button
             type="button"
@@ -68,7 +85,7 @@ const MainMenu = () => {
           </button>
 
           <nav className="hidden md:flex items-center gap-[72px]">
-            {menuItems.map((item) => (
+            {webMenuItems.map((item) => (
               <button
                 key={item.key}
                 type="button"
@@ -124,7 +141,7 @@ const MainMenu = () => {
         }}
       >
         <div className="flex flex-col pt-3">
-          {menuItems.map((item) => (
+          {mobileMenuItems.map((item) => (
             <button
               key={item.key}
               type="button"

@@ -1,32 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
-import apiClient from "../../common/ApiClient";
 
 import "swiper/css";
 import "swiper/css/pagination";
 
-
 const MainContent = () => {
   const router = useRouter();
-
-  // api 테스트
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       await apiClient.get("/test");
-  //     } catch (error) {
-  //       console.error("API 호출 실패:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
-
-  const dentalBtnClick = () => {
-    router.push("/dentalInfo");
-  };
 
   const slides = [
     {
@@ -48,7 +29,7 @@ const MainContent = () => {
   ];
 
   return (
-    <section className="relative bg-[#F7F5EE]">
+    <section className="bg-[#F7F5EE]">
       <Swiper
         modules={[Autoplay, Pagination]}
         autoplay={{
@@ -59,38 +40,39 @@ const MainContent = () => {
           clickable: true,
         }}
         loop
-        className="w-full home-swiper"
+        className="home-swiper"
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
-            <div className="h-[calc(100vh-70px)]">
-              <picture>
+            <div className="relative h-[calc(100vh-70px)] overflow-hidden">
+              <picture className="block h-full w-full">
                 <source
-                  media="(max-width: 767px)"
+                  media="(max-width: 1024px)"
                   srcSet={slide.mobileImage}
                 />
+
                 <img
                   src={slide.webImage}
-                  alt=""
+                  alt={`Dentory banner ${index + 1}`}
+                  className="block h-full w-full object-cover object-center"
                 />
               </picture>
 
-              <div className="absolute inset-0" />
-              <div className="absolute inset-0 flex items-center">
-                <div className="mx-auto w-full max-w-7xl px-4 md:px-8 lg:px-12">
-                  <div className="mt-120 ml-10 flex flex-col gap-3 sm:flex-row">
+              <div className="absolute left-0 right-0 bottom-[72px] lg:bottom-[110px]">
+                <div className="mx-auto w-full max-w-7xl px-6 md:px-12">
+                  <div className="flex flex-row justify-center gap-2 lg:ml-12 lg:justify-start">
                     <button
-                      type="button"
-                      onClick={dentalBtnClick}
-                      className="rounded-full bg-[#FCBF5D] px-8 py-4 text-base font-bold text-white shadow-md transition-all duration-300 hover:bg-[#D88945]"
+                        type="button"
+                        onClick={() => router.push("/dentalInfo")}
+                        className="w-fit rounded-full bg-[#FCBF5D] px-5 py-3 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-[#D88945] md:px-8 md:py-4 md:text-base"
                       >
                         치과 찾기
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => router.push('/community')}
-                      className="rounded-full border border-[#DDECC8] bg-white px-8 py-4 text-base font-bold text-[#7DA35A] shadow-sm transition-all duration-300 hover:bg-[#DDECC8] hover:text-[#7DA35A]"
+                      onClick={() => router.push("/community")}
+                      className="w-fit rounded-full border border-[#DDECC8] bg-white px-5 py-3 text-sm font-bold text-[#7DA35A] shadow-sm transition-all duration-300 hover:bg-[#DDECC8] md:px-8 md:py-4 md:text-base"
                     >
                       커뮤니티 보기
                     </button>
