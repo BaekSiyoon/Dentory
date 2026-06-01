@@ -27,13 +27,13 @@ const MainMenu = () => {
   }, []);
 
   const webMenuItems = [
-    { key: "2", label: "치과 정보", path: "/dentalInfo" },
+    { key: "2", label: "치과 정보", path: "/dental" },
     { key: "3", label: "커뮤니티", path: "/community" },
   ];
 
   const mobileMenuItems = [
     { key: "1", label: "Home", path: "/" },
-    { key: "2", label: "치과 정보", path: "/dentalInfo" },
+    { key: "2", label: "치과 정보", path: "/dental" },
     { key: "3", label: "커뮤니티", path: "/community" },
   ];
 
