@@ -63,8 +63,8 @@ const MainContent = () => {
                   <div className="flex flex-row justify-center gap-2 lg:ml-12 lg:justify-start">
                     <button
                         type="button"
-                        onClick={() => router.push("/dentalInfo")}
-                        className="w-fit rounded-full bg-[#FCBF5D] px-5 py-3 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-[#D88945] md:px-8 md:py-4 md:text-base"
+                        onClick={() => router.push("/dental")}
+                        className="w-fit rounded-full bg-[#FCBF5D] px-5 py-3 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-[#D88945] md:px-8 md:py-4 md:text-base cursor-pointer"
                       >
                         치과 찾기
                     </button>
@@ -72,7 +72,7 @@ const MainContent = () => {
                     <button
                       type="button"
                       onClick={() => router.push("/community")}
-                      className="w-fit rounded-full border border-[#DDECC8] bg-white px-5 py-3 text-sm font-bold text-[#7DA35A] shadow-sm transition-all duration-300 hover:bg-[#DDECC8] md:px-8 md:py-4 md:text-base"
+                      className="w-fit rounded-full border border-[#DDECC8] bg-white px-5 py-3 text-sm font-bold text-[#7DA35A] shadow-sm transition-all duration-300 hover:bg-[#DDECC8] md:px-8 md:py-4 md:text-base cursor-pointer"
                     >
                       커뮤니티 보기
                     </button>

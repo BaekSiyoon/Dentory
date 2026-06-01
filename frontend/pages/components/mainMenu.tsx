@@ -96,6 +96,7 @@ const MainMenu = () => {
                   outline-none shadow-none
                   hover:text-[#fcbf5d]
                   active:text-[#e9a83f]
+                  cursor-pointer
                 "
               >
                 {item.label}
@@ -123,6 +124,7 @@ const MainMenu = () => {
                 hover:text-[#fcbf5d]
                 active:text-[#fcbf5d]
                 active:scale-95
+                cursor-pointer
               "
             >
               <CloseOutlined />
@@ -152,6 +154,7 @@ const MainMenu = () => {
                 hover:bg-amber-100 hover:text-[#fcbf5d]
                 active:bg-amber-100 active:text-[#fcbf5d]
                 transition-colors
+                cursor-pointer
               "
             >
               {item.label}
