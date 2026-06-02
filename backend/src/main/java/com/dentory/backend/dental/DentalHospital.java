@@ -16,7 +16,7 @@ public class DentalHospital {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String hospitalCode; // 요양기관 코드
+    private String hospitalCode;
     private String name;
     private String address;
     private String phone;

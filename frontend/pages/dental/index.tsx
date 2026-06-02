@@ -175,6 +175,19 @@ const DentalInfo = () => {
   const [specialistOnly, setSpecialistOnly] = useState(false);
   // 진료과목 카테고리 원본 데이터
   const [treatmentCategories, setTreatmentCategories] = useState<TreatmentCategory[]>([]);
+  const [mapOpen, setMapOpen] = useState(false);
+
+  const dentalImages = [
+    "/images/dental/defaultDental1.png",
+    "/images/dental/defaultDental2.png",
+    "/images/dental/defaultDental3.png",
+    "/images/dental/defaultDental4.png",
+    "/images/dental/defaultDental5.png",
+    "/images/dental/defaultDental6.png",
+    "/images/dental/defaultDental7.png",
+    "/images/dental/defaultDental8.png",
+    "/images/dental/defaultDental9.png",
+  ];
   
   // 현재 위치 조회
   useEffect(() => {
@@ -384,12 +397,46 @@ const DentalInfo = () => {
             </div>
           </section>
 
-          <section className="flex h-[78px] items-center justify-between rounded-[20px] bg-white px-7 shadow-[0_8px_20px_rgba(80,60,40,0.12)]">
+          <section
+            onClick={() => setMapOpen((prev) => !prev)}
+            className="cursor-pointer flex h-[78px] items-center justify-between rounded-[20px] bg-white px-7 shadow-[0_8px_20px_rgba(80,60,40,0.12)]"
+          >
             <div className="flex items-center gap-3 text-2xl font-bold text-[#4E382D]">
-              <span className="text-[#FCBF5D]">📍</span>
-              지도로 보기
+              <svg
+                className="h-7 w-7 text-[#FCBF5D]"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M3 6.5L9 4L15 6.5L21 4V17.5L15 20L9 17.5L3 20V6.5Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M9 4V17.5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M15 6.5V20"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </svg>
+
+              <span>지도로 보기</span>
             </div>
-            <span className="text-3xl font-bold text-[#5A4033]">⌄</span>
+
+            <span
+              className={`ml-4 h-3 w-3 shrink-0 rotate-45 border-b-[3px] border-r-[3px] transition-all duration-200
+                ${
+                  mapOpen
+                    ? "translate-y-1 rotate-225 border-[#FCBF5D]"
+                    : "-translate-y-1 border-[#6A554B]"
+                }
+              `}
+            />
           </section>
 
           <p ref={resultRef} className="text-xl font-bold text-[#5A4033]">
@@ -403,14 +450,14 @@ const DentalInfo = () => {
               </p>
             )}
 
-            {data.map((item) => (
+            {data.map((item, index) => (
               <article
                 key={item.id}
                 className="flex flex-col justify-between gap-6 rounded-3xl bg-white p-7 shadow-[0_6px_18px_rgba(80,60,40,0.08)] md:flex-row md:items-center"
               >
                 <div className="flex flex-col gap-5 md:flex-row md:items-center">
                   <img
-                    src="/images/dental/defaultDental.png"
+                    src={dentalImages[index % dentalImages.length]}
                     alt="치과 이미지"
                     className="h-40 w-[210px] rounded-3xl object-cover"
                   />
