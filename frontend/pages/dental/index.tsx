@@ -6,6 +6,16 @@ interface DentalData {
   name: string;
   address: string;
   phone: string;
+  latitude?: number;
+  longitude?: number;
+  specialist?: boolean;
+  openNow?: boolean;
+}
+interface DentalPageResponse {
+  content: DentalData[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
 }
 
 // 지역 조회 API 응답 타입
@@ -75,7 +85,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className={`cursor-pointer flex h-[56px] w-full items-center justify-between rounded-full border-[2px] bg-white px-6 text-left text-lg font-bold text-[#5A4033] transition-all duration-200
+          className={`cursor-pointer flex h-14 w-full items-center justify-between rounded-full border-2 bg-white px-6 text-left text-lg font-bold text-[#5A4033] transition-all duration-200
             ${
               open
                 ? "border-[#FCBF5D]"
@@ -89,7 +99,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
             className={`ml-4 h-3 w-3 shrink-0 rotate-45 border-b-[3px] border-r-[3px] transition-all duration-200
               ${
                 open
-                  ? "translate-y-1 rotate-[225deg] border-[#FCBF5D]"
+                  ? "translate-y-1 rotate-225 border-[#FCBF5D]"
                   : "-translate-y-1 border-[#6A554B]"
               }
             `}
@@ -97,7 +107,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
         </button>
 
         {open && (
-          <div className="absolute left-0 top-full z-50 mt-5 w-[230px] rounded-[28px] border-[2px] border-[#EEEAE5] bg-white p-4 shadow-[0_12px_35px_rgba(80,60,40,0.15)]">
+          <div className="absolute left-0 top-full z-50 mt-5 w-[230px] rounded-[28px] border-2 border-[#EEEAE5] bg-white p-4 shadow-[0_12px_35px_rgba(80,60,40,0.15)]">
             <ul className="custom-select-scroll flex max-h-[300px] flex-col gap-2 overflow-y-auto pr-2">
               {options.map((option) => {
                 const selected = option.value === value;
@@ -151,35 +161,73 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
 };
 
 const DentalInfo = () => {
+  const resultRef = useRef<HTMLParagraphElement | null>(null);
   const [data, setData] = useState<DentalData[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [regions, setRegions] = useState<Region[]>([]);
-
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [latitude, setLatitude] = useState(37.5194);
+  const [longitude, setLongitude] = useState(127.0473);
   const [regionValue, setRegionValue] = useState("전체");
   const [treatmentValue, setTreatmentValue] = useState("전체");
-  const [timeValue, setTimeValue] = useState("전체");
+  const [timeValue, setTimeValue] = useState("ALL");
   const [specialistOnly, setSpecialistOnly] = useState(false);
   // 진료과목 카테고리 원본 데이터
   const [treatmentCategories, setTreatmentCategories] = useState<TreatmentCategory[]>([]);
+  
+  // 현재 위치 조회
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+      },
+      () => {
+        console.log("위치 권한 거부 - 청담동 기본 위치 사용");
+      }
+    );
+  }, []);
 
   // 치과 목록 조회
-  useEffect(() => {
-    fetch("http://localhost:8080/api/dentals")
+  const radius = 1;
+  const pageSize = 10;
+
+  // 현재 위치 기준 치과 목록 조회
+  const fetchNearbyDentals = (
+    page: number,
+    lat: number,
+    lng: number
+  ) => {
+    fetch(
+      `http://localhost:8080/api/dentals/nearby?lat=${lat}&lng=${lng}&radius=${radius}&page=${page}&size=${pageSize}`
+    )
       .then((res) => res.json())
-      .then((result) => {
-        console.log("치과 데이터", result);
-        setData(result);
+      .then((result: DentalPageResponse) => {
+        setData(result.content);
+        setTotalCount(result.totalElements);
+        setTotalPages(result.totalPages);
+        setCurrentPage(result.number);
       })
       .catch((error) => {
         console.error("치과 정보 조회 실패", error);
       });
-  }, []);
+  };
+
+  useEffect(() => {
+    fetchNearbyDentals(0, latitude, longitude);
+  }, [latitude, longitude]);
 
   // 지역 목록 조회
   useEffect(() => {
     fetch("http://localhost:8080/api/regions")
       .then((res) => res.json())
       .then((result) => {
-        console.log("지역 데이터", result);
+        // console.log("지역 데이터", result);
         setRegions(result);
       })
       .catch((error) => {
@@ -192,7 +240,7 @@ const DentalInfo = () => {
     fetch("http://localhost:8080/api/treatmentCategories")
       .then((res) => res.json())
       .then((result) => {
-        console.log("진료과목 데이터", result);
+        // console.log("진료과목 데이터", result);
         setTreatmentCategories(result);
       })
       .catch((error) => {
@@ -230,21 +278,47 @@ const DentalInfo = () => {
   const handleSearch = () => {
     const searchParams = {
       regionCode: regionValue === "전체" ? null : regionValue,
-      treatmentCategoryId: treatmentValue === "전체" ? null : Number(treatmentValue),
+      treatmentCategoryId:
+        treatmentValue === "전체" ? null : Number(treatmentValue),
       treatmentTime: timeValue === "ALL" ? null : timeValue,
       specialistOnly,
     };
 
     console.log("검색 조건", searchParams);
+
+    fetchNearbyDentals(0, latitude, longitude);
   };
+
+  // 페이지 이동
+  const handlePageChange = (page: number) => {
+    if (page < 0 || page >= totalPages || page === currentPage) {
+      return;
+    }
+
+    fetchNearbyDentals(page, latitude, longitude);
+    resultRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  // 페이지 버튼 표시
+  const pageGroupSize = 5;
+  const currentGroup = Math.floor(currentPage / pageGroupSize);
+  const startPage = currentGroup * pageGroupSize;
+  const endPage = Math.min(startPage + pageGroupSize, totalPages);
+
+  const pageNumbers = Array.from(
+    { length: endPage - startPage },
+    (_, index) => startPage + index
+  );
 
   return (
     <>
       <MainMenu />
-
       <main className="min-h-screen bg-[#FFFAF0] px-5 py-10">
         <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-8">
-          <section className="rounded-[24px] bg-white p-8 shadow-[0_10px_25px_rgba(80,60,40,0.12)]">
+          <section className="rounded-3xl bg-white p-8 shadow-[0_10px_25px_rgba(80,60,40,0.12)]">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_1fr_1fr_1fr] md:items-end">
               <CustomSelect
                 label="지역 선택"
@@ -269,7 +343,7 @@ const DentalInfo = () => {
 
               <button 
                 onClick={handleSearch}
-                className="h-[56px] rounded-full bg-[#FCBF5D] text-lg font-bold text-[#5A4033] shadow-[0_8px_18px_rgba(80,60,40,0.18)] transition hover:bg-[#F3AD43]">
+                className="h-14 rounded-full bg-[#FCBF5D] text-lg font-bold text-[#5A4033] shadow-[0_8px_18px_rgba(80,60,40,0.18)] transition hover:bg-[#F3AD43]">
                 검색하기
               </button>
             </div>
@@ -282,10 +356,7 @@ const DentalInfo = () => {
                     checked={specialistOnly}
                     onChange={(e) => {
                       const checked = e.target.checked;
-
                       setSpecialistOnly(checked);
-
-                      console.log("전문의 필터 변경", checked);
                     }}
                     className="peer sr-only"
                   />
@@ -308,7 +379,6 @@ const DentalInfo = () => {
                     )}
                   </div>
                 </div>
-
                 <span>전문의만 보기</span>
               </label>
             </div>
@@ -322,31 +392,27 @@ const DentalInfo = () => {
             <span className="text-3xl font-bold text-[#5A4033]">⌄</span>
           </section>
 
-          <p className="text-xl font-bold text-[#5A4033]">
-            총 <span className="text-[#FCBF5D]">{data.length || 50}</span>개의 치과
+          <p ref={resultRef} className="text-xl font-bold text-[#5A4033]">
+            총 <span className="text-[#FCBF5D]">{totalCount.toLocaleString()}</span>개의 치과
           </p>
 
           <section className="flex flex-col gap-5">
-            {(data.length > 0
-              ? data
-              : [
-                  {
-                    id: 1,
-                    name: "서울 밝은 치과",
-                    address: "서울시 강남구 테헤란로 100",
-                    phone: "02-1234-5678",
-                  },
-                ]
-            ).map((item) => (
+            {data.length === 0 && (
+              <p className="rounded-[20px] bg-white p-8 text-center text-lg font-bold text-[#6A554B] shadow-[0_6px_18px_rgba(80,60,40,0.08)]">
+                조건에 맞는 치과가 없습니다.
+              </p>
+            )}
+
+            {data.map((item) => (
               <article
                 key={item.id}
-                className="flex flex-col justify-between gap-6 rounded-[24px] bg-white p-7 shadow-[0_6px_18px_rgba(80,60,40,0.08)] md:flex-row md:items-center"
+                className="flex flex-col justify-between gap-6 rounded-3xl bg-white p-7 shadow-[0_6px_18px_rgba(80,60,40,0.08)] md:flex-row md:items-center"
               >
                 <div className="flex flex-col gap-5 md:flex-row md:items-center">
                   <img
                     src="/images/dental/defaultDental.png"
                     alt="치과 이미지"
-                    className="h-[160px] w-[210px] rounded-[24px] object-cover"
+                    className="h-40 w-[210px] rounded-3xl object-cover"
                   />
 
                   <div>
@@ -378,16 +444,86 @@ const DentalInfo = () => {
                 </div>
 
                 <div className="flex gap-3 md:self-start">
-                  <span className="rounded-full bg-[#7DA35A] px-5 py-2 text-lg font-bold text-white">
-                    전문의
-                  </span>
-                  <span className="rounded-full bg-[#FCBF5D] px-5 py-2 text-lg font-bold text-[#5A4033]">
-                    진료중
-                  </span>
+                  {item.specialist && (
+                    <span className="rounded-full bg-[#7DA35A] px-5 py-2 text-lg font-bold text-white">
+                      전문의
+                    </span>
+                  )}
+
+                  {item.openNow && (
+                    <span className="rounded-full bg-[#FCBF5D] px-5 py-2 text-lg font-bold text-[#5A4033]">
+                      진료중
+                    </span>
+                  )}
                 </div>
               </article>
             ))}
           </section>
+
+          {totalPages > 1 && (
+            <nav className="mt-6 flex items-center justify-center gap-2 md:gap-3">
+              <button
+                type="button"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+                className={`flex h-11 w-11 items-center justify-center rounded-full border-2 transition-all duration-200 md:h-[52px] md:w-[52px] ${
+                  currentPage === 0
+                    ? "cursor-not-allowed border-[#F1EBDD] text-[#D3C9BA]"
+                    : "cursor-pointer border-[#EEE4D5] text-[#5A4033] hover:border-[#FCBF5D]"
+                }`}
+              >
+                <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M15 6L9 12L15 18"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
+              {pageNumbers.map((page) => {
+                const active = page === currentPage;
+
+                return (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => handlePageChange(page)}
+                    className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-2 text-lg font-bold transition-all duration-200 md:h-14 md:w-14 md:text-xl ${
+                      active
+                        ? "border-[#FCBF5D] bg-[#FCBF5D] text-[#5A4033]"
+                        : "border-[#EEE4D5] bg-transparent text-[#5A4033] hover:border-[#FCBF5D]"
+                    }`}
+                  >
+                    {page + 1}
+                  </button>
+                );
+              })}
+
+              <button
+                type="button"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages - 1}
+                className={`flex h-11 w-11 items-center justify-center rounded-full border-2 transition-all duration-200 md:h-[52px] md:w-[52px] ${
+                  currentPage >= totalPages - 1
+                    ? "cursor-not-allowed border-[#F1EBDD] text-[#D3C9BA]"
+                    : "cursor-pointer border-[#EEE4D5] text-[#5A4033] hover:border-[#FCBF5D]"
+                }`}
+              >
+                <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M9 6L15 12L9 18"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </nav>
+          )}
         </div>
       </main>
     </>
