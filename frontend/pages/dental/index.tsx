@@ -8,6 +8,7 @@ interface DentalData {
   phone: string;
 }
 
+// 지역 조회 API 응답 타입
 interface Region {
   id: number;
   regionCode: string;
@@ -25,6 +26,19 @@ interface CustomSelectProps {
   options: SelectOption[];
   onChange: (value: string) => void;
 }
+// 진료과목 조회 API 응답 타입
+interface TreatmentSubject {
+  id: number;
+  name: string;
+  englishName: string;
+  description: string;
+  officialSpecialty: boolean;
+}
+interface TreatmentCategory {
+  id: number;
+  name: string;
+  subjects: TreatmentSubject[];
+}
 
 const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) => {
   const [open, setOpen] = useState(false);
@@ -33,6 +47,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
   const selectedOption =
     options.find((option) => option.value === value) || options[0];
 
+  // 셀렉트 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -135,7 +150,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
   );
 };
 
-const DentalInfo: React.FC = () => {
+const DentalInfo = () => {
   const [data, setData] = useState<DentalData[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
 
@@ -143,7 +158,10 @@ const DentalInfo: React.FC = () => {
   const [treatmentValue, setTreatmentValue] = useState("전체");
   const [timeValue, setTimeValue] = useState("전체");
   const [specialistOnly, setSpecialistOnly] = useState(false);
+  // 진료과목 카테고리 원본 데이터
+  const [treatmentCategories, setTreatmentCategories] = useState<TreatmentCategory[]>([]);
 
+  // 치과 목록 조회
   useEffect(() => {
     fetch("http://localhost:8080/api/dentals")
       .then((res) => res.json())
@@ -156,6 +174,7 @@ const DentalInfo: React.FC = () => {
       });
   }, []);
 
+  // 지역 목록 조회
   useEffect(() => {
     fetch("http://localhost:8080/api/regions")
       .then((res) => res.json())
@@ -168,6 +187,20 @@ const DentalInfo: React.FC = () => {
       });
   }, []);
 
+  // 진료과목 카테고리 조회
+  useEffect(() => {
+    fetch("http://localhost:8080/api/treatmentCategories")
+      .then((res) => res.json())
+      .then((result) => {
+        console.log("진료과목 데이터", result);
+        setTreatmentCategories(result);
+      })
+      .catch((error) => {
+        console.error("진료과목 조회 실패", error);
+      });
+  }, []);
+
+  // 지역 API 데이터 > 셀렉트 옵션 형식으로 변환
   const regionOptions: SelectOption[] = [
     { label: "전체", value: "전체" },
     ...regions.map((region) => ({
@@ -176,23 +209,34 @@ const DentalInfo: React.FC = () => {
     })),
   ];
 
-  // 테스트용
+  // 진료과목 카테고리 > 셀렉트 옵션 형식으로 변환
   const treatmentOptions: SelectOption[] = [
     { label: "전체", value: "전체" },
-    { label: "교정", value: "교정" },
-    { label: "임플란트", value: "임플란트" },
-    { label: "스케일링", value: "스케일링" },
-    { label: "치주치료", value: "치주치료" },
-    { label: "보철치료", value: "보철치료" },
+    ...treatmentCategories.map((category) => ({
+      label: category.name,
+      value: String(category.id),
+    })),
   ];
 
-  // 테스트용
-  const timeOptions: SelectOption[] = [
-    { label: "전체", value: "전체" },
-    { label: "진료중", value: "진료중" },
-    { label: "야간진료", value: "야간진료" },
-    { label: "휴일진료", value: "휴일진료" },
+  // 진료시간은 현재 일단 고정값
+  const timeOptions = [
+    { label: "전체", value: "ALL" },
+    { label: "진료중", value: "OPEN_NOW" },
+    { label: "야간진료", value: "NIGHT_CARE" },
+    { label: "휴일진료", value: "HOLIDAY_CARE" },
   ];
+
+  // 검색 버튼 클릭시 
+  const handleSearch = () => {
+    const searchParams = {
+      regionCode: regionValue === "전체" ? null : regionValue,
+      treatmentCategoryId: treatmentValue === "전체" ? null : Number(treatmentValue),
+      treatmentTime: timeValue === "ALL" ? null : timeValue,
+      specialistOnly,
+    };
+
+    console.log("검색 조건", searchParams);
+  };
 
   return (
     <>
@@ -223,7 +267,9 @@ const DentalInfo: React.FC = () => {
                 onChange={setTimeValue}
               />
 
-              <button className="h-[56px] rounded-full bg-[#FCBF5D] text-lg font-bold text-[#5A4033] shadow-[0_8px_18px_rgba(80,60,40,0.18)] transition hover:bg-[#F3AD43]">
+              <button 
+                onClick={handleSearch}
+                className="h-[56px] rounded-full bg-[#FCBF5D] text-lg font-bold text-[#5A4033] shadow-[0_8px_18px_rgba(80,60,40,0.18)] transition hover:bg-[#F3AD43]">
                 검색하기
               </button>
             </div>
@@ -234,7 +280,13 @@ const DentalInfo: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={specialistOnly}
-                    onChange={(e) => setSpecialistOnly(e.target.checked)}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+
+                      setSpecialistOnly(checked);
+
+                      console.log("전문의 필터 변경", checked);
+                    }}
                     className="peer sr-only"
                   />
 

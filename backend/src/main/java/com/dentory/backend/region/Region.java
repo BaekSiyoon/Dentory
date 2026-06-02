@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+// 전국 시군구 지역 정보
 public class Region {
 
     @Id
@@ -21,8 +22,10 @@ public class Region {
     private String sigunguName;
     private String displayName;
 
+    // 사용 여부를 관리하기 위한 상태
     private Boolean active = true;
 
+     // 지역 데이터 최초 저장 시 사용
     public Region(
             String regionCode,
             String sidoCode,

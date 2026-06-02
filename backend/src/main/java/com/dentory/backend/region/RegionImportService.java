@@ -16,13 +16,16 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
+// 행정안전부 표준지역코드 API를 이용해 전국 시군구 데이터 저장
 public class RegionImportService {
 
     private final RegionRepository regionRepository;
 
+    // 공공데이터 API 인증키
     @Value("${openapi.region.service-key}")
     private String serviceKey;
 
+    // 전국 시군구 데이터를 마지막 페이지까지 조회 후 저장
     @Transactional
     public void importAllRegions() throws Exception {
 
@@ -236,6 +239,7 @@ public class RegionImportService {
         String sigunguName =
                 names.length > 1 ? names[1] : "";
 
+        // 셀렉트 박스용 지역명 생성        
         String displayName =
                 sidoName
                         .replace("특별시", "")
