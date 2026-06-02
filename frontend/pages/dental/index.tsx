@@ -77,7 +77,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
 
   return (
     <div ref={selectRef} className="relative">
-      <label className="mb-3 block text-base font-bold text-[#5A4033]">
+      <label className="mb-2 block text-[14px] font-bold text-[#5A4033]">
         {label}
       </label>
 
@@ -85,7 +85,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className={`cursor-pointer flex h-14 w-full items-center justify-between rounded-full border-2 bg-white px-6 text-left text-lg font-bold text-[#5A4033] transition-all duration-200
+          className={`cursor-pointer flex h-11 w-full items-center justify-between rounded-full border bg-white px-5 text-left text-[14px] font-bold text-[#5A4033] transition-all duration-200
             ${
               open
                 ? "border-[#FCBF5D]"
@@ -96,7 +96,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
           <span className="truncate">{selectedOption?.label || "전체"}</span>
 
           <span
-            className={`ml-4 h-3 w-3 shrink-0 rotate-45 border-b-[3px] border-r-[3px] transition-all duration-200
+            className={`ml-4 h-2.5 w-2.5 shrink-0 rotate-45 border-b-2 border-r-2 transition-all duration-200
               ${
                 open
                   ? "translate-y-1 rotate-225 border-[#FCBF5D]"
@@ -107,7 +107,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
         </button>
 
         {open && (
-          <div className="absolute left-0 top-full z-50 mt-5 w-[230px] rounded-[28px] border-2 border-[#EEEAE5] bg-white p-4 shadow-[0_12px_35px_rgba(80,60,40,0.15)]">
+          <div className="absolute left-0 top-full z-50 mt-2 w-[230px] rounded-[28px] border-2 border-[#EEEAE5] bg-white p-4 shadow-[0_12px_35px_rgba(80,60,40,0.15)]">
             <ul className="custom-select-scroll flex max-h-[300px] flex-col gap-2 overflow-y-auto pr-2">
               {options.map((option) => {
                 const selected = option.value === value;
@@ -176,6 +176,7 @@ const DentalInfo = () => {
   // 진료과목 카테고리 원본 데이터
   const [treatmentCategories, setTreatmentCategories] = useState<TreatmentCategory[]>([]);
   const [mapOpen, setMapOpen] = useState(false);
+  const [locationReady, setLocationReady] = useState(false);
 
   const dentalImages = [
     "/images/dental/defaultDental1.png",
@@ -189,22 +190,24 @@ const DentalInfo = () => {
     "/images/dental/defaultDental9.png",
   ];
   
-  // 현재 위치 조회
   useEffect(() => {
-    if (!navigator.geolocation) {
-      return;
-    }
+  if (!navigator.geolocation) {
+    setLocationReady(true);
+    return;
+  }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLatitude(position.coords.latitude);
-        setLongitude(position.coords.longitude);
-      },
-      () => {
-        console.log("위치 권한 거부 - 청담동 기본 위치 사용");
-      }
-    );
-  }, []);
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      setLatitude(position.coords.latitude);
+      setLongitude(position.coords.longitude);
+      setLocationReady(true);
+    },
+    () => {
+      console.log("위치 권한 거부 - 청담동 기본 위치 사용");
+      setLocationReady(true);
+    }
+  );
+}, []);
 
   // 치과 목록 조회
   const radius = 1;
@@ -232,8 +235,12 @@ const DentalInfo = () => {
   };
 
   useEffect(() => {
+    if (!locationReady) {
+      return;
+    }
+
     fetchNearbyDentals(0, latitude, longitude);
-  }, [latitude, longitude]);
+  }, [locationReady, latitude, longitude]);
 
   // 지역 목록 조회
   useEffect(() => {
@@ -331,7 +338,7 @@ const DentalInfo = () => {
       <MainMenu />
       <main className="min-h-screen bg-[#FFFAF0] px-5 py-10">
         <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-8">
-          <section className="rounded-3xl bg-white p-8 shadow-[0_10px_25px_rgba(80,60,40,0.12)]">
+          <section className="rounded-3xl bg-white p-6 shadow-[0_10px_25px_rgba(80,60,40,0.12)]">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_1fr_1fr_1fr] md:items-end">
               <CustomSelect
                 label="지역 선택"
@@ -356,13 +363,13 @@ const DentalInfo = () => {
 
               <button 
                 onClick={handleSearch}
-                className="h-14 rounded-full bg-[#FCBF5D] text-lg font-bold text-[#5A4033] shadow-[0_8px_18px_rgba(80,60,40,0.18)] transition hover:bg-[#F3AD43]">
+                className="h-11 rounded-full bg-[#FCBF5D] text-[14px] font-bold text-[#5A4033] shadow-[0_6px_14px_rgba(80,60,40,0.16)] transition hover:bg-[#F3AD43]">
                 검색하기
               </button>
             </div>
 
-            <div className="mt-8 border-t border-[#EEEAE5] pt-6">
-              <label className="flex cursor-pointer items-center gap-4 text-lg font-bold text-[#5A4033]">
+            <div className="mt-6 border-t border-[#EEEAE5] pt-5">
+              <label className="flex cursor-pointer items-center gap-3 text-[14px] font-bold text-[#5A4033]">
                 <div className="relative">
                   <input
                     type="checkbox"
@@ -374,10 +381,10 @@ const DentalInfo = () => {
                     className="peer sr-only"
                   />
 
-                  <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-[#B8B8B8] bg-white transition-all peer-checked:border-[#FCBF5D] peer-checked:bg-[#FCBF5D]">
+                  <div className="flex h-5 w-5 items-center justify-center rounded border border-[#B8B8B8] bg-white transition-all peer-checked:border-[#FCBF5D] peer-checked:bg-[#FCBF5D]">
                     {specialistOnly && (
                       <svg
-                        className="h-4 w-4"
+                        className="h-3 w-3"
                         viewBox="0 0 24 24"
                         fill="none"
                       >
@@ -401,7 +408,7 @@ const DentalInfo = () => {
             onClick={() => setMapOpen((prev) => !prev)}
             className="cursor-pointer flex h-[78px] items-center justify-between rounded-[20px] bg-white px-7 shadow-[0_8px_20px_rgba(80,60,40,0.12)]"
           >
-            <div className="flex items-center gap-3 text-2xl font-bold text-[#4E382D]">
+            <div className="flex items-center gap-3 text-[18px] font-bold text-[#4E382D]">
               <svg
                 className="h-7 w-7 text-[#FCBF5D]"
                 viewBox="0 0 24 24"
@@ -429,7 +436,7 @@ const DentalInfo = () => {
             </div>
 
             <span
-              className={`ml-4 h-3 w-3 shrink-0 rotate-45 border-b-[3px] border-r-[3px] transition-all duration-200
+              className={`ml-4 h-2.5 w-2.5 shrink-0 rotate-45 border-b-2 border-r-2 transition-all duration-200
                 ${
                   mapOpen
                     ? "translate-y-1 rotate-225 border-[#FCBF5D]"
@@ -439,8 +446,8 @@ const DentalInfo = () => {
             />
           </section>
 
-          <p ref={resultRef} className="text-xl font-bold text-[#5A4033]">
-            총 <span className="text-[#FCBF5D]">{totalCount.toLocaleString()}</span>개의 치과
+          <p ref={resultRef} className="-mb-6 ml-2 text-[18px] font-bold text-[#5A4033]">
+            내 주변 치과 <span className="text-[#FCBF5D]">{totalCount.toLocaleString()}</span>개
           </p>
 
           <section className="flex flex-col gap-5">
@@ -453,35 +460,35 @@ const DentalInfo = () => {
             {data.map((item, index) => (
               <article
                 key={item.id}
-                className="flex flex-col justify-between gap-6 rounded-3xl bg-white p-7 shadow-[0_6px_18px_rgba(80,60,40,0.08)] md:flex-row md:items-center"
+                className="flex flex-col justify-between gap-5 rounded-3xl bg-white p-5 shadow-[0_6px_18px_rgba(80,60,40,0.08)] md:flex-row md:items-center"
               >
                 <div className="flex flex-col gap-5 md:flex-row md:items-center">
                   <img
                     src={dentalImages[index % dentalImages.length]}
                     alt="치과 이미지"
-                    className="h-40 w-[210px] rounded-3xl object-cover"
+                    className="h-[140px] w-[190px] rounded-3xl object-cover"
                   />
 
                   <div>
-                    <h2 className="text-3xl font-bold text-[#5A4033]">
+                    <h2 className="text-[22px] font-bold text-[#5A4033]">
                       {item.name}
                     </h2>
 
-                    <div className="mt-3 flex items-center gap-2 text-xl font-bold text-[#6A554B]">
+                    <div className="mt-1 flex items-center gap-2 text-[15px] font-semibold text-[#6A554B]">
                       <span className="text-[#FCBF5D]">★</span>
                       <span>4.5</span>
                       <span className="font-medium">리뷰 510</span>
                     </div>
 
-                    <p className="mt-3 text-lg font-medium text-[#6A554B]">
+                    <p className="mt-1 text-[14px] font-medium text-[#6A554B]">
                       📍 {item.address}
                     </p>
 
-                    <div className="mt-5 flex flex-wrap gap-3">
+                    <div className="mt-3 flex flex-wrap gap-3">
                       {["임플란트", "교정", "미백"].map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full bg-[#DDECC8] px-5 py-2 text-lg font-bold text-[#7DA35A]"
+                          className="rounded-full bg-[#DDECC8] px-4 py-1.5 text-[13px] font-bold text-[#7DA35A]"
                         >
                           {tag}
                         </span>
@@ -492,13 +499,13 @@ const DentalInfo = () => {
 
                 <div className="flex gap-3 md:self-start">
                   {item.specialist && (
-                    <span className="rounded-full bg-[#7DA35A] px-5 py-2 text-lg font-bold text-white">
+                    <span className="rounded-full bg-[#7DA35A] px-4 py-1.5 text-[13px] font-bold text-white">
                       전문의
                     </span>
                   )}
 
                   {item.openNow && (
-                    <span className="rounded-full bg-[#FCBF5D] px-5 py-2 text-lg font-bold text-[#5A4033]">
+                    <span className="rounded-full bg-[#FCBF5D] px-4 py-1.5 text-[13px] font-bold text-[#5A4033]">
                       진료중
                     </span>
                   )}
@@ -508,18 +515,18 @@ const DentalInfo = () => {
           </section>
 
           {totalPages > 1 && (
-            <nav className="mt-6 flex items-center justify-center gap-2 md:gap-3">
+            <nav className="mt-4 flex items-center justify-center gap-2">
               <button
                 type="button"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 0}
-                className={`flex h-11 w-11 items-center justify-center rounded-full border-2 transition-all duration-200 md:h-[52px] md:w-[52px] ${
+                className={`flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200 ${
                   currentPage === 0
                     ? "cursor-not-allowed border-[#F1EBDD] text-[#D3C9BA]"
                     : "cursor-pointer border-[#EEE4D5] text-[#5A4033] hover:border-[#FCBF5D]"
                 }`}
               >
-                <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
+                <svg className="h-3 w-3 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M15 6L9 12L15 18"
                     stroke="currentColor"
@@ -538,7 +545,7 @@ const DentalInfo = () => {
                     key={page}
                     type="button"
                     onClick={() => handlePageChange(page)}
-                    className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-2 text-lg font-bold transition-all duration-200 md:h-14 md:w-14 md:text-xl ${
+                    className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border text-[14px] font-semibold transition-all duration-200 ${
                       active
                         ? "border-[#FCBF5D] bg-[#FCBF5D] text-[#5A4033]"
                         : "border-[#EEE4D5] bg-transparent text-[#5A4033] hover:border-[#FCBF5D]"
@@ -553,13 +560,13 @@ const DentalInfo = () => {
                 type="button"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages - 1}
-                className={`flex h-11 w-11 items-center justify-center rounded-full border-2 transition-all duration-200 md:h-[52px] md:w-[52px] ${
+                className={`flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200 ${
                   currentPage >= totalPages - 1
                     ? "cursor-not-allowed border-[#F1EBDD] text-[#D3C9BA]"
                     : "cursor-pointer border-[#EEE4D5] text-[#5A4033] hover:border-[#FCBF5D]"
                 }`}
               >
-                <svg className="h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
+                <svg className="h-3 w-3 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M9 6L15 12L9 18"
                     stroke="currentColor"

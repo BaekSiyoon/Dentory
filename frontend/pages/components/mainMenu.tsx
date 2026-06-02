@@ -64,7 +64,7 @@ const MainMenu = () => {
               alt="Logo"
               className="h-20 w-20 md:h-24 md:w-24 object-contain"
             />
-            <span className="text-[24px] md:text-[30px] font-extrabold leading-none">
+            <span className="text-[24px] md:text-[28px] font-extrabold leading-none">
               Dentory
             </span>
           </button>
@@ -92,7 +92,7 @@ const MainMenu = () => {
                 onClick={() => handleMenuClick(item.path)}
                 className="
                   appearance-none border-none bg-transparent p-0
-                  text-[20px] font-bold leading-none text-[#6B5A50]
+                  text-[18px] font-bold leading-none text-[#6B5A50]
                   outline-none shadow-none
                   hover:text-[#fcbf5d]
                   active:text-[#e9a83f]
