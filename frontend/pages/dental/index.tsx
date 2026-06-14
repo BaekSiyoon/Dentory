@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
 import MainMenu from "../components/mainMenu";
 import KakaoMap from "../components/dentalInfo/kakaoMap";
 
@@ -163,6 +164,7 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
 
 const DentalInfo = () => {
   const resultRef = useRef<HTMLParagraphElement | null>(null);
+  const router = useRouter();
   const [data, setData] = useState<DentalData[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [regions, setRegions] = useState<Region[]>([]);
@@ -466,6 +468,7 @@ const DentalInfo = () => {
             {data.map((item, index) => (
               <article
                 key={item.id}
+                onClick={() => router.push(`/dental/${item.id}`)}
                 className="flex flex-col justify-between gap-5 rounded-3xl bg-white p-5 shadow-[0_6px_18px_rgba(80,60,40,0.08)] md:flex-row md:items-center"
               >
                 <div className="flex flex-col gap-5 md:flex-row md:items-center">
