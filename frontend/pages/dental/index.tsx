@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import MainMenu from "../components/mainMenu";
+import KakaoMap from "../components/dentalInfo/kakaoMap";
 
 interface DentalData {
   id: number;
@@ -404,46 +405,51 @@ const DentalInfo = () => {
             </div>
           </section>
 
-          <section
-            onClick={() => setMapOpen((prev) => !prev)}
-            className="cursor-pointer flex h-[78px] items-center justify-between rounded-[20px] bg-white px-7 shadow-[0_8px_20px_rgba(80,60,40,0.12)]"
-          >
-            <div className="flex items-center gap-3 text-[18px] font-bold text-[#4E382D]">
-              <svg
-                className="h-7 w-7 text-[#FCBF5D]"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M3 6.5L9 4L15 6.5L21 4V17.5L15 20L9 17.5L3 20V6.5Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M9 4V17.5"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M15 6.5V20"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-              </svg>
+          <section className="overflow-hidden rounded-[20px] bg-white shadow-[0_8px_20px_rgba(80,60,40,0.12)]">
+            <button
+              type="button"
+              onClick={() => setMapOpen((prev) => !prev)}
+              className="flex h-[78px] w-full cursor-pointer items-center justify-between px-7"
+            >
+              <div className="flex items-center gap-3 text-[18px] font-bold text-[#4E382D]">
+                <svg
+                  className="h-7 w-7 text-[#FCBF5D]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M3 6.5L9 4L15 6.5L21 4V17.5L15 20L9 17.5L3 20V6.5Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M9 4V17.5" stroke="currentColor" strokeWidth="2" />
+                  <path d="M15 6.5V20" stroke="currentColor" strokeWidth="2" />
+                </svg>
 
-              <span>지도로 보기</span>
-            </div>
+                <span>지도로 보기</span>
+              </div>
 
-            <span
-              className={`ml-4 h-2.5 w-2.5 shrink-0 rotate-45 border-b-2 border-r-2 transition-all duration-200
-                ${
-                  mapOpen
-                    ? "translate-y-1 rotate-225 border-[#FCBF5D]"
-                    : "-translate-y-1 border-[#6A554B]"
-                }
-              `}
-            />
+              <span
+                className={`ml-4 h-2.5 w-2.5 shrink-0 rotate-45 border-b-2 border-r-2 transition-all duration-200
+                  ${
+                    mapOpen
+                      ? "translate-y-1 rotate-225 border-[#FCBF5D]"
+                      : "-translate-y-1 border-[#6A554B]"
+                  }
+                `}
+              />
+            </button>
+
+            {mapOpen && (
+              <div className="px-5 pb-5">
+                <KakaoMap
+                  hospitals={data}
+                  latitude={latitude}
+                  longitude={longitude}
+                />
+              </div>
+            )}
           </section>
 
           <p ref={resultRef} className="-mb-6 ml-2 text-[18px] font-bold text-[#5A4033]">
