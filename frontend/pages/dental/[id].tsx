@@ -122,7 +122,7 @@ const DentalDetailPage = () => {
     return (
       <>
         <MainMenu />
-        <main className="min-h-screen bg-[#FBF3E4] px-5 py-10 text-center text-[16px] font-bold text-[#5A4033]">
+        <main className="min-h-screen bg-[#FBF3E4] px-5 py-10 text-center text-[15px] font-bold text-[#5A4033]">
           치과 정보를 불러오는 중입니다.
         </main>
       </>
@@ -133,7 +133,7 @@ const DentalDetailPage = () => {
     return (
       <>
         <MainMenu />
-        <main className="min-h-screen bg-[#FBF3E4] px-5 py-10 text-center text-[16px] font-bold text-[#5A4033]">
+        <main className="min-h-screen bg-[#FBF3E4] px-5 py-10 text-center text-[15px] font-bold text-[#5A4033]">
           치과 정보를 찾을 수 없습니다.
         </main>
       </>
@@ -144,14 +144,14 @@ const DentalDetailPage = () => {
     <>
       <MainMenu />
 
-      <main className="min-h-screen bg-[#FBF3E4] px-5 py-7 text-[#5B463A] md:px-10">
-        <div className="mx-auto max-w-[1080px]">
+      <main className="min-h-screen bg-[#FBF3E4] px-5 py-6 text-[#5B463A] md:px-8">
+        <div className="mx-auto max-w-[980px]">
           <button
             type="button"
             onClick={() => router.back()}
-            className="mb-5 flex items-center gap-2 text-[24px] font-extrabold text-[#5A4033] transition-opacity hover:opacity-70 md:text-[28px]"
+            className="mb-4 flex items-center gap-2 text-[17px] font-extrabold text-[#5A4033] transition-colors hover:text-[#FFB84D] md:text-[19px]"
           >
-            <svg className="h-6 w-6 md:h-7 md:w-7" viewBox="0 0 24 24" fill="none">
+            <svg className="h-4 w-4 -translate-y-px md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
               <path
                 d="M15 5L8 12L15 19"
                 stroke="currentColor"
@@ -163,53 +163,54 @@ const DentalDetailPage = () => {
             <span>목록으로</span>
           </button>
 
-          <section className="overflow-hidden rounded-[20px] shadow-sm">
+          <section className="overflow-hidden rounded-[18px] shadow-sm">
             <img
               src="/images/dental/detailSample.png"
               alt={`${dental.name} 이미지`}
-              className="h-[220px] w-full object-cover md:h-[340px]"
+              className="h-[190px] w-full object-cover md:h-[290px]"
             />
           </section>
 
-          <section className="mt-5 rounded-[20px] bg-white p-5 shadow-[0_8px_20px_rgba(80,60,40,0.10)] md:p-8">
+          <section className="mt-4 rounded-[18px] bg-white p-4 shadow-[0_6px_16px_rgba(80,60,40,0.10)] md:p-6">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h1 className="text-[28px] font-extrabold md:text-[36px]">
+                <h1 className="text-[24px] font-extrabold md:text-[30px]">
                   {dental.name}
                 </h1>
 
-                <div className="mt-3 flex items-center gap-2 text-[16px] font-bold">
+                <div className="mt-2.5 flex items-center gap-2 text-[14px] font-bold">
                   <StarFilled style={{ color: "#FFB84D" }} />
                   <span>4.8</span>
                   <span className="font-medium text-[#7C6A5F]">리뷰 342</span>
                 </div>
               </div>
 
-              <div className="flex shrink-0 flex-col gap-2 md:flex-row">
+              <div className="flex shrink-0 flex-col gap-1.5 md:flex-row">
                 {dental.specialist && (
-                  <span className="rounded-full bg-[#7DA35A] px-4 py-1.5 text-center text-[13px] font-bold text-white">
+                  <span className="rounded-full bg-[#7DA35A] px-3 py-1 text-center text-[12px] font-bold text-white">
                     전문의
                   </span>
                 )}
 
                 {dental.openNow ? (
-                  <span className="rounded-full bg-[#FCBF5D] px-4 py-1.5 text-center text-[13px] font-bold text-[#5A4033]">
+                  <span className="rounded-full bg-[#FCBF5D] px-3 py-1 text-center text-[12px] font-bold text-[#5A4033]">
                     진료중
                   </span>
                 ) : (
-                  <span className="rounded-full bg-[#EEEAE5] px-4 py-1.5 text-center text-[13px] font-bold text-[#7C6A5F]">
+                  <span className="rounded-full bg-[#EEEAE5] px-3 py-1 text-center text-[12px] font-bold text-[#7C6A5F]">
                     진료종료
                   </span>
                 )}
               </div>
             </div>
 
-            <p className="mt-6 text-[15px] font-medium leading-relaxed md:text-[17px]">
-              {dental.name}의 상세 정보입니다. 주소, 전화번호, 위치 정보를
-              확인하고 방문 전 병원에 직접 문의해보세요.
+            <p className="mt-5 text-[14px] font-medium leading-relaxed md:text-[15px]">
+              {dental.name}은 {dental.address}에 위치한 치과입니다.
+              <br />
+              방문 전 전화로 진료 가능 여부를 확인해보세요.
             </p>
 
-            <div className="mt-8 space-y-6">
+            <div className="mt-6 space-y-5">
               <InfoItem icon={<EnvironmentOutlined />} title="주소">
                 {dental.address}
               </InfoItem>
@@ -222,15 +223,18 @@ const DentalDetailPage = () => {
                 {dental.openNow ? "현재 진료중입니다." : "현재 진료중이 아닙니다."}
               </InfoItem>
 
-              <div className="flex gap-3">
-                <CalendarOutlined className="mt-1 text-[18px] text-[#FFB84D]" />
+              <div className="flex gap-2.5">
+                <CalendarOutlined
+                  className="mt-1 text-[16px]"
+                  style={{ color: "#FFB84D" }}
+                />
                 <div>
-                  <h2 className="mb-3 text-[16px] font-extrabold">진료과목</h2>
+                  <h2 className="mb-2.5 text-[15px] font-extrabold">진료과목</h2>
                   <div className="flex flex-wrap gap-2">
                     {treatments.map((item) => (
                       <span
                         key={item}
-                        className="rounded-full bg-[#DDECC8] px-4 py-1.5 text-[13px] font-bold text-[#6E9B4F]"
+                        className="rounded-full bg-[#DDECC8] px-3.5 py-1 text-[12px] font-bold text-[#6E9B4F]"
                       >
                         {item}
                       </span>
@@ -241,11 +245,11 @@ const DentalDetailPage = () => {
             </div>
           </section>
 
-          <section className="mt-5 rounded-[20px] bg-white p-5 shadow-[0_8px_20px_rgba(80,60,40,0.10)] md:p-8">
-            <h2 className="mb-6 text-[22px] font-extrabold">위치</h2>
+          <section className="mt-4 rounded-[18px] bg-white p-4 shadow-[0_6px_16px_rgba(80,60,40,0.10)] md:p-6">
+            <h2 className="mb-4 text-[19px] font-extrabold">위치</h2>
 
             {dental.latitude != null && dental.longitude != null ? (
-              <div className="overflow-hidden rounded-[18px]">
+              <div className="overflow-hidden rounded-[16px]">
                 <KakaoMap
                   hospitals={nearbyDentals}
                   latitude={dental.latitude}
@@ -255,10 +259,10 @@ const DentalDetailPage = () => {
                 />
               </div>
             ) : (
-              <div className="flex h-[230px] items-center justify-center rounded-[18px] bg-[#F5F8F1] md:h-[330px]">
+              <div className="flex h-[200px] items-center justify-center rounded-2xl bg-[#F5F8F1] md:h-[280px]">
                 <div className="text-center">
-                  <EnvironmentOutlined className="text-[54px] text-[#7DA35A]" />
-                  <p className="mt-4 text-[16px] font-bold text-[#6B5A50]">
+                  <EnvironmentOutlined className="text-[42px] text-[#7DA35A]" />
+                  <p className="mt-3 text-[14px] font-bold text-[#6B5A50]">
                     위치 정보가 없습니다.
                   </p>
                 </div>
@@ -266,56 +270,32 @@ const DentalDetailPage = () => {
             )}
           </section>
 
-          <section className="mt-5 overflow-hidden rounded-[20px] bg-white shadow-[0_8px_20px_rgba(80,60,40,0.10)]">
-            <div className="grid grid-cols-3 border-b border-[#EDE8E1] text-center text-[16px] font-extrabold md:text-[18px]">
-              <button className="relative py-5 text-[#FFB84D] after:absolute after:-bottom-px after:left-0 after:h-0.5 after:w-full after:bg-[#FFB84D]">
-                상세정보
-              </button>
-              <button className="py-5 text-[#5B463A]">리뷰 342</button>
-              <button className="py-5 text-[#5B463A]">사진</button>
-            </div>
+          <section className="mt-4 rounded-[18px] bg-white p-4 shadow-[0_6px_16px_rgba(80,60,40,0.10)] md:p-6">
+            <h2 className="mb-4 text-[19px] font-extrabold">리뷰 342</h2>
 
-            <div className="p-5 md:p-8">
-              <h2 className="text-[22px] font-extrabold">병원 소개</h2>
-              <p className="mt-4 text-[15px] leading-relaxed md:text-[17px]">
-                {dental.name}은 {dental.address}에 위치한 치과입니다. 방문 전
-                전화로 진료 가능 여부를 확인해보세요.
-              </p>
-
-              <h2 className="mt-8 text-[22px] font-extrabold">기본 정보</h2>
-              <ul className="mt-4 space-y-2 text-[15px] leading-relaxed md:text-[17px]">
-                <li>• 병원명 - {dental.name}</li>
-                <li>• 주소 - {dental.address}</li>
-                <li>• 전화번호 - {dental.phone || "정보 없음"}</li>
-                <li>• 전문의 여부 - {dental.specialist ? "전문의" : "일반 치과"}</li>
-                <li>• 진료 상태 - {dental.openNow ? "진료중" : "진료종료"}</li>
-              </ul>
-            </div>
-          </section>
-
-          <section className="mt-5 rounded-[20px] bg-white p-5 shadow-[0_8px_20px_rgba(80,60,40,0.10)] md:p-8">
-            <h2 className="mb-5 text-[22px] font-extrabold">리뷰 342</h2>
-
-            <div className="space-y-6">
+            <div className="space-y-5">
               {reviews.map((review) => (
-                <div key={review.date} className="border-b border-[#EEEAE5] pb-6 last:border-b-0">
+                <div
+                  key={review.date}
+                  className="border-b border-[#EEEAE5] pb-5 last:border-b-0"
+                >
                   <div className="mb-2 flex items-center gap-2">
-                    <strong className="text-[15px]">{review.name}</strong>
-                    <span className="rounded-md bg-[#DDECC8] px-2 py-1 text-[11px] font-bold text-[#6E9B4F]">
+                    <strong className="text-[14px]">{review.name}</strong>
+                    <span className="rounded-md bg-[#DDECC8] px-2 py-0.5 text-[10px] font-bold text-[#6E9B4F]">
                       {review.tag}
                     </span>
                   </div>
 
-                  <div className="mb-3 flex items-center gap-2 text-[13px]">
+                  <div className="mb-2.5 flex items-center gap-2 text-[12px]">
                     <span className="text-[#FFB84D]">★★★★★</span>
                     <span className="text-[#7C6A5F]">{review.date}</span>
                   </div>
 
-                  <p className="text-[14px] leading-relaxed md:text-[15px]">
+                  <p className="text-[13px] leading-relaxed md:text-[14px]">
                     {review.content}
                   </p>
 
-                  <p className="mt-4 text-[13px] font-bold text-[#7C6A5F]">
+                  <p className="mt-3 text-[12px] font-bold text-[#7C6A5F]">
                     <LikeFilled className="mr-1 text-[#FFB84D]" />
                     도움돼요 {review.help}
                   </p>
@@ -339,11 +319,11 @@ const InfoItem = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex gap-3">
-      <span className="mt-1 text-[18px] text-[#FFB84D]">{icon}</span>
+    <div className="flex gap-2.5">
+      <span className="mt-1 text-[16px] text-[#FFB84D]">{icon}</span>
       <div>
-        <h2 className="mb-1.5 text-[16px] font-extrabold">{title}</h2>
-        <div className="text-[14px] font-medium leading-relaxed text-[#7C6A5F] md:text-[15px]">
+        <h2 className="mb-1 text-[15px] font-extrabold">{title}</h2>
+        <div className="text-[13px] font-medium leading-relaxed text-[#7C6A5F] md:text-[14px]">
           {children}
         </div>
       </div>
