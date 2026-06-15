@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import MainMenu from "../components/mainMenu";
+import KakaoMap from "../components/dentalInfo/kakaoMap";
 import {
   EnvironmentOutlined,
   PhoneOutlined,
@@ -10,8 +11,32 @@ import {
   LikeFilled,
 } from "@ant-design/icons";
 
+interface DentalData {
+  id: number;
+  name: string;
+  address: string;
+  phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  specialist: boolean;
+  openNow: boolean;
+  distance: number | null;
+}
+
+interface DentalPageResponse {
+  content: DentalData[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+}
+
 const DentalDetailPage = () => {
   const router = useRouter();
+  const { id } = router.query;
+
+  const [dental, setDental] = useState<DentalData | null>(null);
+  const [nearbyDentals, setNearbyDentals] = useState<DentalData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const treatments = ["임플란트", "교정", "미백", "치주치료"];
 
@@ -42,6 +67,79 @@ const DentalDetailPage = () => {
     },
   ];
 
+  // URL의 id 값으로 치과 상세 정보 조회
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+
+    setLoading(true);
+
+    fetch(`http://localhost:8080/api/dentals/${id}`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("치과 상세 조회 실패");
+        }
+
+        return res.json();
+      })
+      .then((result: DentalData) => {
+        setDental(result);
+
+        // 상세 병원 좌표를 기준으로 주변 치과를 조회해 지도에 함께 표시
+        if (result.latitude != null && result.longitude != null) {
+          fetch(
+            `http://localhost:8080/api/dentals/nearby?lat=${result.latitude}&lng=${result.longitude}&radius=0.5&page=0&size=8`
+          )
+            .then((res) => {
+              if (!res.ok) {
+                throw new Error("주변 치과 조회 실패");
+              }
+
+              return res.json();
+            })
+            .then((nearbyResult: DentalPageResponse) => {
+              setNearbyDentals(nearbyResult.content);
+            })
+            .catch((error) => {
+              console.error("주변 치과 조회 실패", error);
+              setNearbyDentals([result]);
+            });
+        } else {
+          setNearbyDentals([result]);
+        }
+      })
+      .catch((error) => {
+        console.error("치과 상세 조회 실패", error);
+        setDental(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return (
+      <>
+        <MainMenu />
+        <main className="min-h-screen bg-[#FBF3E4] px-5 py-10 text-center text-[16px] font-bold text-[#5A4033]">
+          치과 정보를 불러오는 중입니다.
+        </main>
+      </>
+    );
+  }
+
+  if (!dental) {
+    return (
+      <>
+        <MainMenu />
+        <main className="min-h-screen bg-[#FBF3E4] px-5 py-10 text-center text-[16px] font-bold text-[#5A4033]">
+          치과 정보를 찾을 수 없습니다.
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
       <MainMenu />
@@ -68,7 +166,7 @@ const DentalDetailPage = () => {
           <section className="overflow-hidden rounded-[20px] shadow-sm">
             <img
               src="/images/dental/detailSample.png"
-              alt="치과 상세 이미지"
+              alt={`${dental.name} 이미지`}
               className="h-[220px] w-full object-cover md:h-[340px]"
             />
           </section>
@@ -77,7 +175,7 @@ const DentalDetailPage = () => {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h1 className="text-[28px] font-extrabold md:text-[36px]">
-                  서울 밝은 치과
+                  {dental.name}
                 </h1>
 
                 <div className="mt-3 flex items-center gap-2 text-[16px] font-bold">
@@ -87,29 +185,41 @@ const DentalDetailPage = () => {
                 </div>
               </div>
 
-              <span className="rounded-full bg-[#7DA35A] px-4 py-1.5 text-[13px] font-bold text-white">
-                전문의
-              </span>
+              <div className="flex shrink-0 flex-col gap-2 md:flex-row">
+                {dental.specialist && (
+                  <span className="rounded-full bg-[#7DA35A] px-4 py-1.5 text-center text-[13px] font-bold text-white">
+                    전문의
+                  </span>
+                )}
+
+                {dental.openNow ? (
+                  <span className="rounded-full bg-[#FCBF5D] px-4 py-1.5 text-center text-[13px] font-bold text-[#5A4033]">
+                    진료중
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-[#EEEAE5] px-4 py-1.5 text-center text-[13px] font-bold text-[#7C6A5F]">
+                    진료종료
+                  </span>
+                )}
+              </div>
             </div>
 
             <p className="mt-6 text-[15px] font-medium leading-relaxed md:text-[17px]">
-              20년 경력의 전문의가 직접 진료하는 치과입니다. 첨단 장비와 최신
-              기술로 환자분들께 최상의 진료를 제공하고 있습니다.
+              {dental.name}의 상세 정보입니다. 주소, 전화번호, 위치 정보를
+              확인하고 방문 전 병원에 직접 문의해보세요.
             </p>
 
             <div className="mt-8 space-y-6">
               <InfoItem icon={<EnvironmentOutlined />} title="주소">
-                서울시 강남구 테헤란로 123, 3층
+                {dental.address}
               </InfoItem>
 
               <InfoItem icon={<PhoneOutlined />} title="전화번호">
-                02-1234-5678
+                {dental.phone || "전화번호 정보 없음"}
               </InfoItem>
 
-              <InfoItem icon={<ClockCircleOutlined />} title="진료시간">
-                <p>평일: 09:00 - 18:00</p>
-                <p>토요일: 09:00 - 14:00</p>
-                <p>일요일: 휴진</p>
+              <InfoItem icon={<ClockCircleOutlined />} title="진료상태">
+                {dental.openNow ? "현재 진료중입니다." : "현재 진료중이 아닙니다."}
               </InfoItem>
 
               <div className="flex gap-3">
@@ -134,14 +244,25 @@ const DentalDetailPage = () => {
           <section className="mt-5 rounded-[20px] bg-white p-5 shadow-[0_8px_20px_rgba(80,60,40,0.10)] md:p-8">
             <h2 className="mb-6 text-[22px] font-extrabold">위치</h2>
 
-            <div className="flex h-[230px] items-center justify-center rounded-[18px] bg-[#F5F8F1] md:h-[330px]">
-              <div className="text-center">
-                <EnvironmentOutlined className="text-[54px] text-[#7DA35A]" />
-                <p className="mt-4 text-[16px] font-bold text-[#6B5A50]">
-                  카카오 지도 영역
-                </p>
+            {dental.latitude != null && dental.longitude != null ? (
+              <div className="overflow-hidden rounded-[18px]">
+                <KakaoMap
+                  hospitals={nearbyDentals}
+                  latitude={dental.latitude}
+                  longitude={dental.longitude}
+                  selectedHospitalId={dental.id}
+                />
               </div>
-            </div>
+            ) : (
+              <div className="flex h-[230px] items-center justify-center rounded-[18px] bg-[#F5F8F1] md:h-[330px]">
+                <div className="text-center">
+                  <EnvironmentOutlined className="text-[54px] text-[#7DA35A]" />
+                  <p className="mt-4 text-[16px] font-bold text-[#6B5A50]">
+                    위치 정보가 없습니다.
+                  </p>
+                </div>
+              </div>
+            )}
           </section>
 
           <section className="mt-5 overflow-hidden rounded-[20px] bg-white shadow-[0_8px_20px_rgba(80,60,40,0.10)]">
@@ -156,16 +277,17 @@ const DentalDetailPage = () => {
             <div className="p-5 md:p-8">
               <h2 className="text-[22px] font-extrabold">병원 소개</h2>
               <p className="mt-4 text-[15px] leading-relaxed md:text-[17px]">
-                20년 경력의 전문의가 직접 진료하는 치과입니다. 첨단 장비와 최신
-                기술로 환자분들께 최상의 진료를 제공하고 있습니다.
+                {dental.name}은 {dental.address}에 위치한 치과입니다. 방문 전
+                전화로 진료 가능 여부를 확인해보세요.
               </p>
 
-              <h2 className="mt-8 text-[22px] font-extrabold">주요 진료</h2>
+              <h2 className="mt-8 text-[22px] font-extrabold">기본 정보</h2>
               <ul className="mt-4 space-y-2 text-[15px] leading-relaxed md:text-[17px]">
-                <li>• 임플란트 - 최신 디지털 임플란트 시스템</li>
-                <li>• 교정 - 투명 교정, 설측 교정</li>
-                <li>• 미백 - 전문가 미백 시스템</li>
-                <li>• 치주치료 - 잇몸 질환 전문 치료</li>
+                <li>• 병원명 - {dental.name}</li>
+                <li>• 주소 - {dental.address}</li>
+                <li>• 전화번호 - {dental.phone || "정보 없음"}</li>
+                <li>• 전문의 여부 - {dental.specialist ? "전문의" : "일반 치과"}</li>
+                <li>• 진료 상태 - {dental.openNow ? "진료중" : "진료종료"}</li>
               </ul>
             </div>
           </section>

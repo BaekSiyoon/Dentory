@@ -1,12 +1,13 @@
 package com.dentory.backend.dental;
+import java.util.List;
 
 import com.dentory.backend.dental.dto.DentalHospitalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +40,17 @@ public class DentalHospitalService {
                         PageRequest.of(page, size)
                 )
                 .map(DentalHospitalResponse::new);
+    }
+
+    // 치과 상세 조회
+    @Transactional(readOnly = true)
+    public DentalHospitalResponse getDentalHospital(Long id) {
+
+        DentalHospital hospital = dentalHospitalRepository
+                .findByIdAndActiveTrue(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("치과 정보를 찾을 수 없습니다."));
+
+        return new DentalHospitalResponse(hospital);
     }
 }

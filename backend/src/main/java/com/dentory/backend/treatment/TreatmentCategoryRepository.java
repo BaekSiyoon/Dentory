@@ -1,7 +1,6 @@
 package com.dentory.backend.treatment;
-
-import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 // 진료과목 카테고리 조회
 public interface TreatmentCategoryRepository extends JpaRepository<TreatmentCategory, Long> {

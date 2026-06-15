@@ -1,11 +1,11 @@
 package com.dentory.backend.treatment;
+import java.util.List;
 
 import com.dentory.backend.treatment.dto.TreatmentCategoryResponse;
 import com.dentory.backend.treatment.dto.TreatmentSubjectResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 // 진료과목 조회

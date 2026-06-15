@@ -1,12 +1,10 @@
 package com.dentory.backend.dental;
+import java.util.List;
 
 import com.dentory.backend.dental.dto.DentalHospitalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/dentals")
 @RequiredArgsConstructor
@@ -47,4 +45,12 @@ public class DentalHospitalController {
         dentalHospitalImportService.importDentalHospitals();
         return "치과 정보 저장 완료";
     }
+
+    // 치과 상세 조회
+   @GetMapping("/{id}")
+   public DentalHospitalResponse getDentalHospital(
+           @PathVariable Long id
+   ) {
+       return dentalHospitalService.getDentalHospital(id);
+   }
 }

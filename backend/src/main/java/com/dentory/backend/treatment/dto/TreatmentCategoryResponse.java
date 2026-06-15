@@ -1,7 +1,6 @@
 package com.dentory.backend.treatment.dto;
-
-import com.dentory.backend.treatment.TreatmentCategory;
 import java.util.List;
+import com.dentory.backend.treatment.TreatmentCategory;
 
 // 진료과목 카테고리 조회 응답
 public class TreatmentCategoryResponse {

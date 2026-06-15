@@ -1,9 +1,9 @@
 package com.dentory.backend.region;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.dentory.backend.region.dto.RegionResponse;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

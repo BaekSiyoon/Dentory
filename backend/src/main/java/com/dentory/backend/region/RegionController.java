@@ -1,9 +1,9 @@
 package com.dentory.backend.region;
+import java.util.List;
 
 import com.dentory.backend.region.dto.RegionResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/regions")

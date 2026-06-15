@@ -1,4 +1,5 @@
 package com.dentory.backend.treatment;
+import java.util.List;
 
 import com.dentory.backend.treatment.dto.TreatmentCategoryResponse;
 import com.dentory.backend.treatment.dto.TreatmentSubjectResponse;
@@ -7,9 +8,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 // 진료과목 조회

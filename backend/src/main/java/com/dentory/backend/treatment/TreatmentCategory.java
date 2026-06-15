@@ -1,8 +1,7 @@
 package com.dentory.backend.treatment;
-
-import jakarta.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import jakarta.persistence.*;
 
 @Entity
 // 진료과목 카테고리

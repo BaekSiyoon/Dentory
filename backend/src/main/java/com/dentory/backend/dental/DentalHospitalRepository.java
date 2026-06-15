@@ -1,12 +1,12 @@
 package com.dentory.backend.dental;
+import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 // 치과 정보 조회
 public interface DentalHospitalRepository extends JpaRepository<DentalHospital, Long> {
@@ -16,6 +16,10 @@ public interface DentalHospitalRepository extends JpaRepository<DentalHospital, 
 
     // 사용중인 치과 조회
     List<DentalHospital> findAllByActiveTrue();
+
+    // 상세 페이지 치과 단건 조회
+    // 삭제되지 않고 사용중인(active=true) 치과만 조회
+    Optional<DentalHospital> findByIdAndActiveTrue(Long id);
 
     // 현재 위치 기준 반경 내 치과 조회
     @Query(
