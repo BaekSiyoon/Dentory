@@ -42,6 +42,22 @@ public class DentalHospitalService {
                 .map(DentalHospitalResponse::new);
     }
 
+    // 지역, 전문의 조건으로 치과 검색
+    @Transactional(readOnly = true)
+    public Page<DentalHospitalResponse> searchDentals(
+            String regionName,
+            boolean specialistOnly,
+            int page,
+            int size
+    ) {
+        return dentalHospitalRepository.searchDentals(
+                        regionName,
+                        specialistOnly,
+                        PageRequest.of(page, size)
+                )
+                .map(DentalHospitalResponse::new);
+    }
+
     // 치과 상세 조회
     @Transactional(readOnly = true)
     public DentalHospitalResponse getDentalHospital(Long id) {

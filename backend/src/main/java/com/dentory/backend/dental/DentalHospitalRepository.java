@@ -21,6 +21,21 @@ public interface DentalHospitalRepository extends JpaRepository<DentalHospital, 
     // 삭제되지 않고 사용중인(active=true) 치과만 조회
     Optional<DentalHospital> findByIdAndActiveTrue(Long id);
 
+    // 지역, 전문의 조건으로 치과 검색
+    // 진료과목/진료시간은 병원 데이터에 아직 없어서 추후 조건 추가
+    @Query("""
+            SELECT dh
+            FROM DentalHospital dh
+            WHERE dh.active = true
+            AND (:regionName IS NULL OR dh.address LIKE %:regionName%)
+            AND (:specialistOnly = false OR dh.specialist = true)
+            """)
+    Page<DentalHospital> searchDentals(
+            @Param("regionName") String regionName,
+            @Param("specialistOnly") boolean specialistOnly,
+            Pageable pageable
+    );
+
     // 현재 위치 기준 반경 내 치과 조회
     @Query(
             value = """

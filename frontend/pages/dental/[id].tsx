@@ -179,7 +179,7 @@ const DentalDetailPage = () => {
                 </h1>
 
                 <div className="mt-3 flex items-center gap-2 text-[16px] font-bold">
-                  <StarFilled className="text-[#FFB84D]" />
+                  <StarFilled style={{ color: "#FFB84D" }} />
                   <span>4.8</span>
                   <span className="font-medium text-[#7C6A5F]">리뷰 342</span>
                 </div>

@@ -13,6 +13,7 @@ interface DentalData {
   specialist?: boolean;
   openNow?: boolean;
 }
+
 interface DentalPageResponse {
   content: DentalData[];
   totalElements: number;
@@ -20,7 +21,6 @@ interface DentalPageResponse {
   number: number;
 }
 
-// 지역 조회 API 응답 타입
 interface Region {
   id: number;
   regionCode: string;
@@ -38,7 +38,7 @@ interface CustomSelectProps {
   options: SelectOption[];
   onChange: (value: string) => void;
 }
-// 진료과목 조회 API 응답 타입
+
 interface TreatmentSubject {
   id: number;
   name: string;
@@ -46,11 +46,14 @@ interface TreatmentSubject {
   description: string;
   officialSpecialty: boolean;
 }
+
 interface TreatmentCategory {
   id: number;
   name: string;
   subjects: TreatmentSubject[];
 }
+
+type SearchMode = "nearby" | "search";
 
 const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) => {
   const [open, setOpen] = useState(false);
@@ -59,7 +62,6 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
   const selectedOption =
     options.find((option) => option.value === value) || options[0];
 
-  // 셀렉트 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -87,24 +89,20 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className={`cursor-pointer flex h-11 w-full items-center justify-between rounded-full border bg-white px-5 text-left text-[14px] font-bold text-[#5A4033] transition-all duration-200
-            ${
-              open
-                ? "border-[#FCBF5D]"
-                : "border-[#EEEAE5] hover:border-[#FCBF5D]"
-            }
-          `}
+          className={`flex h-11 w-full cursor-pointer items-center justify-between rounded-full border bg-white px-5 text-left text-[14px] font-bold text-[#5A4033] transition-all duration-200 ${
+            open
+              ? "border-[#FCBF5D]"
+              : "border-[#EEEAE5] hover:border-[#FCBF5D]"
+          }`}
         >
           <span className="truncate">{selectedOption?.label || "전체"}</span>
 
           <span
-            className={`ml-4 h-2.5 w-2.5 shrink-0 rotate-45 border-b-2 border-r-2 transition-all duration-200
-              ${
-                open
-                  ? "translate-y-1 rotate-225 border-[#FCBF5D]"
-                  : "-translate-y-1 border-[#6A554B]"
-              }
-            `}
+            className={`ml-4 h-2.5 w-2.5 shrink-0 rotate-45 border-b-2 border-r-2 transition-all duration-200 ${
+              open
+                ? "translate-y-1 rotate-225 border-[#FCBF5D]"
+                : "-translate-y-1 border-[#6A554B]"
+            }`}
           />
         </button>
 
@@ -122,13 +120,11 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
                         onChange(option.value);
                         setOpen(false);
                       }}
-                      className={`cursor-pointer w-full rounded-full px-5 py-3 text-left text-lg font-bold transition-all duration-200
-                        ${
-                          selected
-                            ? "bg-[#FCBF5D] text-[#5A4033]"
-                            : "bg-white text-[#5A4033] hover:bg-[#FFF7EA]"
-                        }
-                      `}
+                      className={`w-full cursor-pointer rounded-full px-5 py-3 text-left text-lg font-bold transition-all duration-200 ${
+                        selected
+                          ? "bg-[#FCBF5D] text-[#5A4033]"
+                          : "bg-white text-[#5A4033] hover:bg-[#FFF7EA]"
+                      }`}
                     >
                       {option.label}
                     </button>
@@ -165,21 +161,29 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
 const DentalInfo = () => {
   const resultRef = useRef<HTMLParagraphElement | null>(null);
   const router = useRouter();
+
   const [data, setData] = useState<DentalData[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [regions, setRegions] = useState<Region[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [latitude, setLatitude] = useState(37.5194);
-  const [longitude, setLongitude] = useState(127.0473);
+
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [locationReady, setLocationReady] = useState(false);
+  const [locationDenied, setLocationDenied] = useState(false);
+  const [searchedByRegion, setSearchedByRegion] = useState(false);
+
   const [regionValue, setRegionValue] = useState("전체");
   const [treatmentValue, setTreatmentValue] = useState("전체");
   const [timeValue, setTimeValue] = useState("ALL");
   const [specialistOnly, setSpecialistOnly] = useState(false);
-  // 진료과목 카테고리 원본 데이터
-  const [treatmentCategories, setTreatmentCategories] = useState<TreatmentCategory[]>([]);
+
+  const [treatmentCategories, setTreatmentCategories] = useState<
+    TreatmentCategory[]
+  >([]);
   const [mapOpen, setMapOpen] = useState(false);
-  const [locationReady, setLocationReady] = useState(false);
+  const [searchMode, setSearchMode] = useState<SearchMode>("nearby");
 
   const dentalImages = [
     "/images/dental/defaultDental1.png",
@@ -192,65 +196,156 @@ const DentalInfo = () => {
     "/images/dental/defaultDental8.png",
     "/images/dental/defaultDental9.png",
   ];
-  
-  useEffect(() => {
-  if (!navigator.geolocation) {
-    setLocationReady(true);
-    return;
-  }
 
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      setLatitude(position.coords.latitude);
-      setLongitude(position.coords.longitude);
-      setLocationReady(true);
-    },
-    () => {
-      console.log("위치 권한 거부 - 청담동 기본 위치 사용");
-      setLocationReady(true);
-    }
-  );
-}, []);
-
-  // 치과 목록 조회
   const radius = 1;
   const pageSize = 10;
 
-  // 현재 위치 기준 치과 목록 조회
-  const fetchNearbyDentals = (
-    page: number,
-    lat: number,
-    lng: number
-  ) => {
+  const updatePageData = (result: DentalPageResponse) => {
+    setData(result.content);
+    setTotalCount(result.totalElements);
+    setTotalPages(result.totalPages);
+    setCurrentPage(result.number);
+  };
+
+  const resetPageData = () => {
+    setData([]);
+    setTotalCount(0);
+    setTotalPages(0);
+    setCurrentPage(0);
+  };
+
+  const getSelectedRegionName = (value: string) => {
+    if (value === "전체") {
+      return null;
+    }
+
+    const selectedRegion = regions.find((region) => region.regionCode === value);
+
+    if (!selectedRegion) {
+      return null;
+    }
+
+    return selectedRegion.displayName.split(" ").pop() ?? null;
+  };
+
+  const fetchNearbyDentals = (page: number, lat: number, lng: number) => {
+    setSearchMode("nearby");
+
     fetch(
       `http://localhost:8080/api/dentals/nearby?lat=${lat}&lng=${lng}&radius=${radius}&page=${page}&size=${pageSize}`
     )
       .then((res) => res.json())
       .then((result: DentalPageResponse) => {
-        setData(result.content);
-        setTotalCount(result.totalElements);
-        setTotalPages(result.totalPages);
-        setCurrentPage(result.number);
+        updatePageData(result);
       })
       .catch((error) => {
         console.error("치과 정보 조회 실패", error);
       });
   };
 
+  const fetchSearchDentals = (
+    page: number,
+    regionName: string | null,
+    onlySpecialist: boolean
+  ) => {
+    setSearchMode("search");
+
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(pageSize),
+      specialistOnly: String(onlySpecialist),
+    });
+
+    if (regionName) {
+      params.append("regionName", regionName);
+    }
+
+    fetch(`http://localhost:8080/api/dentals/search?${params.toString()}`)
+      .then((res) => res.json())
+      .then((result: DentalPageResponse) => {
+        updatePageData(result);
+
+        if (locationDenied && regionName) {
+          setSearchedByRegion(true);
+        }
+      })
+      .catch((error) => {
+        console.error("치과 검색 실패", error);
+      });
+  };
+
+  const runSearch = (
+    page: number,
+    nextSpecialistOnly = specialistOnly,
+    nextRegionValue = regionValue
+  ) => {
+    const regionName = getSelectedRegionName(nextRegionValue);
+
+    console.log("검색 조건", {
+      regionName,
+      treatmentCategoryId:
+        treatmentValue === "전체" ? null : Number(treatmentValue),
+      treatmentTime: timeValue === "ALL" ? null : timeValue,
+      specialistOnly: nextSpecialistOnly,
+    });
+
+    // 위치 거부 상태에서 지역을 전체로 검색하면 안내 상태로 되돌림
+    if (locationDenied && !regionName) {
+      resetPageData();
+      setSearchMode("search");
+      setSearchedByRegion(false);
+      return;
+    }
+
+    if (regionName || nextSpecialistOnly) {
+      fetchSearchDentals(page, regionName, nextSpecialistOnly);
+      return;
+    }
+
+    if (latitude != null && longitude != null && !locationDenied) {
+      fetchNearbyDentals(page, latitude, longitude);
+      return;
+    }
+
+    resetPageData();
+  };
+
   useEffect(() => {
-    if (!locationReady) {
+    if (!navigator.geolocation) {
+      setLocationDenied(true);
+      setLocationReady(true);
+      setSearchedByRegion(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        setLocationDenied(false);
+        setLocationReady(true);
+      },
+      () => {
+        setLocationDenied(true);
+        setLocationReady(true);
+        setSearchedByRegion(false);
+        resetPageData();
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!locationReady || locationDenied || latitude == null || longitude == null) {
       return;
     }
 
     fetchNearbyDentals(0, latitude, longitude);
-  }, [locationReady, latitude, longitude]);
+  }, [locationReady, locationDenied, latitude, longitude]);
 
-  // 지역 목록 조회
   useEffect(() => {
     fetch("http://localhost:8080/api/regions")
       .then((res) => res.json())
-      .then((result) => {
-        // console.log("지역 데이터", result);
+      .then((result: Region[]) => {
         setRegions(result);
       })
       .catch((error) => {
@@ -258,12 +353,10 @@ const DentalInfo = () => {
       });
   }, []);
 
-  // 진료과목 카테고리 조회
   useEffect(() => {
     fetch("http://localhost:8080/api/treatmentCategories")
       .then((res) => res.json())
       .then((result) => {
-        // console.log("진료과목 데이터", result);
         setTreatmentCategories(result);
       })
       .catch((error) => {
@@ -271,16 +364,52 @@ const DentalInfo = () => {
       });
   }, []);
 
-  // 지역 API 데이터 > 셀렉트 옵션 형식으로 변환
+  const sortedRegions = [...regions].sort((a, b) => {
+    const sidoOrder = [
+      "서울",
+      "경기",
+      "인천",
+      "부산",
+      "대구",
+      "광주",
+      "대전",
+      "울산",
+      "세종",
+      "강원",
+      "충북",
+      "충남",
+      "전북",
+      "전남",
+      "경북",
+      "경남",
+      "제주",
+    ];
+
+    const aIndex = sidoOrder.findIndex((sido) =>
+      a.displayName.startsWith(sido)
+    );
+    const bIndex = sidoOrder.findIndex((sido) =>
+      b.displayName.startsWith(sido)
+    );
+
+    const safeAIndex = aIndex === -1 ? sidoOrder.length : aIndex;
+    const safeBIndex = bIndex === -1 ? sidoOrder.length : bIndex;
+
+    if (safeAIndex !== safeBIndex) {
+      return safeAIndex - safeBIndex;
+    }
+
+    return a.displayName.localeCompare(b.displayName, "ko-KR");
+  });
+
   const regionOptions: SelectOption[] = [
     { label: "전체", value: "전체" },
-    ...regions.map((region) => ({
+    ...sortedRegions.map((region) => ({
       label: region.displayName,
       value: region.regionCode,
     })),
   ];
 
-  // 진료과목 카테고리 > 셀렉트 옵션 형식으로 변환
   const treatmentOptions: SelectOption[] = [
     { label: "전체", value: "전체" },
     ...treatmentCategories.map((category) => ({
@@ -289,7 +418,6 @@ const DentalInfo = () => {
     })),
   ];
 
-  // 진료시간은 현재 일단 고정값
   const timeOptions = [
     { label: "전체", value: "ALL" },
     { label: "진료중", value: "OPEN_NOW" },
@@ -297,35 +425,41 @@ const DentalInfo = () => {
     { label: "휴일진료", value: "HOLIDAY_CARE" },
   ];
 
-  // 검색 버튼 클릭시 
   const handleSearch = () => {
-    const searchParams = {
-      regionCode: regionValue === "전체" ? null : regionValue,
-      treatmentCategoryId:
-        treatmentValue === "전체" ? null : Number(treatmentValue),
-      treatmentTime: timeValue === "ALL" ? null : timeValue,
-      specialistOnly,
-    };
-
-    console.log("검색 조건", searchParams);
-
-    fetchNearbyDentals(0, latitude, longitude);
+    runSearch(0);
   };
 
-  // 페이지 이동
+  const handleSpecialistChange = (checked: boolean) => {
+    setSpecialistOnly(checked);
+    runSearch(0, checked);
+  };
+
   const handlePageChange = (page: number) => {
     if (page < 0 || page >= totalPages || page === currentPage) {
       return;
     }
 
-    fetchNearbyDentals(page, latitude, longitude);
+    if (searchMode === "search") {
+      fetchSearchDentals(page, getSelectedRegionName(regionValue), specialistOnly);
+    } else if (latitude != null && longitude != null) {
+      fetchNearbyDentals(page, latitude, longitude);
+    }
+
     resultRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
   };
 
-  // 페이지 버튼 표시
+  const mapCenterHospital = data.find(
+    (item) => item.latitude != null && item.longitude != null
+  );
+
+  const mapLatitude = latitude ?? mapCenterHospital?.latitude ?? null;
+  const mapLongitude = longitude ?? mapCenterHospital?.longitude ?? null;
+
+  const showLocationGuide = locationDenied && !searchedByRegion;
+
   const pageGroupSize = 5;
   const currentGroup = Math.floor(currentPage / pageGroupSize);
   const startPage = currentGroup * pageGroupSize;
@@ -339,9 +473,17 @@ const DentalInfo = () => {
   return (
     <>
       <MainMenu />
+
       <main className="min-h-screen bg-[#FFFAF0] px-5 py-10">
         <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-8">
           <section className="rounded-3xl bg-white p-6 shadow-[0_10px_25px_rgba(80,60,40,0.12)]">
+            {showLocationGuide && (
+              <div className="mb-5 rounded-2xl bg-[#FFF7EA] px-5 py-4 text-[14px] font-bold text-[#5A4033]">
+                현재 위치를 사용할 수 없습니다. 지역을 선택하여 치과를
+                검색해주세요.
+              </div>
+            )}
+
             <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_1fr_1fr_1fr] md:items-end">
               <CustomSelect
                 label="지역 선택"
@@ -364,9 +506,11 @@ const DentalInfo = () => {
                 onChange={setTimeValue}
               />
 
-              <button 
+              <button
+                type="button"
                 onClick={handleSearch}
-                className="h-11 rounded-full bg-[#FCBF5D] text-[14px] font-bold text-[#5A4033] shadow-[0_6px_14px_rgba(80,60,40,0.16)] transition hover:bg-[#F3AD43]">
+                className="h-11 rounded-full bg-[#FCBF5D] text-[14px] font-bold text-[#5A4033] shadow-[0_6px_14px_rgba(80,60,40,0.16)] transition hover:bg-[#F3AD43]"
+              >
                 검색하기
               </button>
             </div>
@@ -378,8 +522,7 @@ const DentalInfo = () => {
                     type="checkbox"
                     checked={specialistOnly}
                     onChange={(e) => {
-                      const checked = e.target.checked;
-                      setSpecialistOnly(checked);
+                      handleSpecialistChange(e.target.checked);
                     }}
                     className="peer sr-only"
                   />
@@ -402,6 +545,7 @@ const DentalInfo = () => {
                     )}
                   </div>
                 </div>
+
                 <span>전문의만 보기</span>
               </label>
             </div>
@@ -433,35 +577,62 @@ const DentalInfo = () => {
               </div>
 
               <span
-                className={`ml-4 h-2.5 w-2.5 shrink-0 rotate-45 border-b-2 border-r-2 transition-all duration-200
-                  ${
-                    mapOpen
-                      ? "translate-y-1 rotate-225 border-[#FCBF5D]"
-                      : "-translate-y-1 border-[#6A554B]"
-                  }
-                `}
+                className={`ml-4 h-2.5 w-2.5 shrink-0 rotate-45 border-b-2 border-r-2 transition-all duration-200 ${
+                  mapOpen
+                    ? "translate-y-1 rotate-225 border-[#FCBF5D]"
+                    : "-translate-y-1 border-[#6A554B]"
+                }`}
               />
             </button>
 
             {mapOpen && (
               <div className="px-5 pb-5">
-                <KakaoMap
-                  hospitals={data}
-                  latitude={latitude}
-                  longitude={longitude}
-                />
+                {mapLatitude != null && mapLongitude != null && data.length > 0 ? (
+                  <KakaoMap
+                    hospitals={data}
+                    latitude={mapLatitude}
+                    longitude={mapLongitude}
+                  />
+                ) : (
+                  <div className="flex h-[260px] items-center justify-center rounded-2xl bg-[#F5F8F1] text-center text-[15px] font-bold text-[#6A554B]">
+                    위치를 허용하거나 지역을 선택하여 검색해주세요.
+                  </div>
+                )}
               </div>
             )}
           </section>
 
-          <p ref={resultRef} className="-mb-6 ml-2 text-[18px] font-bold text-[#5A4033]">
-            내 주변 치과 <span className="text-[#FCBF5D]">{totalCount.toLocaleString()}</span>개
+          <p
+            ref={resultRef}
+            className="-mb-6 ml-2 text-[18px] font-bold text-[#5A4033]"
+          >
+            {showLocationGuide ? (
+              "지역을 선택해주세요"
+            ) : searchMode === "search" ? (
+              <>
+                검색 결과{" "}
+                <span className="text-[#FCBF5D]">
+                  {totalCount.toLocaleString()}
+                </span>
+                개
+              </>
+            ) : (
+              <>
+                내 주변 치과{" "}
+                <span className="text-[#FCBF5D]">
+                  {totalCount.toLocaleString()}
+                </span>
+                개
+              </>
+            )}
           </p>
 
           <section className="flex flex-col gap-5">
             {data.length === 0 && (
               <p className="rounded-[20px] bg-white p-8 text-center text-lg font-bold text-[#6A554B] shadow-[0_6px_18px_rgba(80,60,40,0.08)]">
-                조건에 맞는 치과가 없습니다.
+                {showLocationGuide
+                  ? "위치를 사용할 수 없습니다. 지역을 선택하여 검색해주세요."
+                  : "조건에 맞는 치과가 없습니다."}
               </p>
             )}
 
@@ -469,7 +640,7 @@ const DentalInfo = () => {
               <article
                 key={item.id}
                 onClick={() => router.push(`/dental/${item.id}`)}
-                className="flex flex-col justify-between gap-5 rounded-3xl bg-white p-5 shadow-[0_6px_18px_rgba(80,60,40,0.08)] md:flex-row md:items-center"
+                className="flex cursor-pointer flex-col justify-between gap-5 rounded-3xl bg-white p-5 shadow-[0_6px_18px_rgba(80,60,40,0.08)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(80,60,40,0.12)] md:flex-row md:items-center"
               >
                 <div className="flex flex-col gap-5 md:flex-row md:items-center">
                   <img

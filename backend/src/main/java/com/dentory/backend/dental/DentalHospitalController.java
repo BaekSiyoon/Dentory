@@ -39,6 +39,22 @@ public class DentalHospitalController {
         );
     }
 
+    // 지역, 전문의 조건으로 치과 검색
+    @GetMapping("/search")
+    public Page<DentalHospitalResponse> searchDentals(
+            @RequestParam(required = false) String regionName,
+            @RequestParam(defaultValue = "false") boolean specialistOnly,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return dentalHospitalService.searchDentals(
+                regionName,
+                specialistOnly,
+                page,
+                size
+        );
+    }
+
     // 공공 API 치과 정보 저장
     @PostMapping("/import")
     public String importDentalHospitals() throws Exception {
