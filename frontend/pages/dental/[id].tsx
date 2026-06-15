@@ -251,6 +251,7 @@ const DentalDetailPage = () => {
                   latitude={dental.latitude}
                   longitude={dental.longitude}
                   selectedHospitalId={dental.id}
+                  enableDynamicSearch
                 />
               </div>
             ) : (
