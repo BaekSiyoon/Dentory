@@ -11,6 +11,11 @@ import {
   LikeFilled,
 } from "@ant-design/icons";
 
+interface DentalSubject {
+  subjectCode: string;
+  subjectName: string;
+}
+
 interface DentalData {
   id: number;
   name: string;
@@ -21,6 +26,7 @@ interface DentalData {
   specialist: boolean;
   openNow: boolean;
   distance: number | null;
+  subjects?: DentalSubject[];
 }
 
 interface DentalPageResponse {
@@ -30,6 +36,15 @@ interface DentalPageResponse {
   number: number;
 }
 
+const subjectTagColors = [
+  "bg-[#FFF4CC] text-[#B8860B]",
+  "bg-[#FFE6D5] text-[#D97706]",
+  "bg-[#FDE2F3] text-[#BE185D]",
+  "bg-[#DCFCE7] text-[#15803D]",
+  "bg-[#DBEAFE] text-[#2563EB]",
+  "bg-[#EDE9FE] text-[#7C3AED]",
+];
+
 const DentalDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -37,8 +52,6 @@ const DentalDetailPage = () => {
   const [dental, setDental] = useState<DentalData | null>(null);
   const [nearbyDentals, setNearbyDentals] = useState<DentalData[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const treatments = ["임플란트", "교정", "미백", "치주치료"];
 
   const reviews = [
     {
@@ -151,7 +164,11 @@ const DentalDetailPage = () => {
             onClick={() => router.back()}
             className="mb-4 flex items-center gap-2 text-[17px] font-extrabold text-[#5A4033] transition-colors hover:text-[#FFB84D] md:text-[19px]"
           >
-            <svg className="h-4 w-4 -translate-y-px md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
+            <svg
+              className="h-4 w-4 -translate-y-px md:h-5 md:w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
               <path
                 d="M15 5L8 12L15 19"
                 stroke="currentColor"
@@ -229,16 +246,27 @@ const DentalDetailPage = () => {
                   style={{ color: "#FFB84D" }}
                 />
                 <div>
-                  <h2 className="mb-2.5 text-[15px] font-extrabold">진료과목</h2>
+                  <h2 className="mb-2.5 text-[15px] font-extrabold">
+                    진료과목
+                  </h2>
+
                   <div className="flex flex-wrap gap-2">
-                    {treatments.map((item) => (
+                    {(dental.subjects ?? []).map((subject, index) => (
                       <span
-                        key={item}
-                        className="rounded-full bg-[#DDECC8] px-3.5 py-1 text-[12px] font-bold text-[#6E9B4F]"
+                        key={subject.subjectCode}
+                        className={`rounded-full px-3.5 py-1 text-[12px] font-bold ${
+                          subjectTagColors[index % subjectTagColors.length]
+                        }`}
                       >
-                        {item}
+                        {subject.subjectName}
                       </span>
                     ))}
+
+                    {(dental.subjects?.length ?? 0) === 0 && (
+                      <span className="rounded-full bg-[#F3F4F6] px-3.5 py-1 text-[12px] font-bold text-[#6B7280]">
+                        진료과목 정보 없음
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -249,7 +277,7 @@ const DentalDetailPage = () => {
             <h2 className="mb-4 text-[19px] font-extrabold">위치</h2>
 
             {dental.latitude != null && dental.longitude != null ? (
-              <div className="overflow-hidden rounded-[16px]">
+              <div className="overflow-hidden rounded-2xl">
                 <KakaoMap
                   hospitals={nearbyDentals}
                   latitude={dental.latitude}

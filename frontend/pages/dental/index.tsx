@@ -3,6 +3,10 @@ import { useRouter } from "next/router";
 import MainMenu from "../components/mainMenu";
 import KakaoMap from "../components/dentalInfo/kakaoMap";
 
+interface DentalSubject {
+  subjectCode: string;
+  subjectName: string;
+}
 interface DentalData {
   id: number;
   name: string;
@@ -12,8 +16,8 @@ interface DentalData {
   longitude?: number;
   specialist?: boolean;
   openNow?: boolean;
+  subjects?: DentalSubject[];
 }
-
 interface DentalPageResponse {
   content: DentalData[];
   totalElements: number;
@@ -157,6 +161,16 @@ const CustomSelect = ({ label, value, options, onChange }: CustomSelectProps) =>
     </div>
   );
 };
+
+// 진료과목 태그 색상
+const subjectTagColors = [
+  "bg-[#FFF4CC] text-[#B8860B]",
+  "bg-[#FFE6D5] text-[#D97706]",
+  "bg-[#FDE2F3] text-[#BE185D]",
+  "bg-[#DCFCE7] text-[#15803D]",
+  "bg-[#DBEAFE] text-[#2563EB]",
+  "bg-[#EDE9FE] text-[#7C3AED]",
+];
 
 const DentalInfo = () => {
   const resultRef = useRef<HTMLParagraphElement | null>(null);
@@ -665,14 +679,26 @@ const DentalInfo = () => {
                     </p>
 
                     <div className="mt-3 flex flex-wrap gap-3">
-                      {["임플란트", "교정", "미백"].map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full bg-[#DDECC8] px-4 py-1.5 text-[13px] font-bold text-[#7DA35A]"
-                        >
-                          {tag}
+                      {(item.subjects ?? [])
+                        .slice(0, 4)
+                        .map((subject, subjectIndex) => (
+                          <span
+                            key={subject.subjectCode}
+                            className={`rounded-full px-4 py-1.5 text-[13px] font-bold ${
+                              subjectTagColors[
+                                subjectIndex % subjectTagColors.length
+                              ]
+                            }`}
+                          >
+                            {subject.subjectName}
+                          </span>
+                        ))}
+
+                      {(item.subjects?.length ?? 0) > 4 && (
+                        <span className="rounded-full bg-[#F3F4F6] px-4 py-1.5 text-[13px] font-bold text-[#6B7280]">
+                          +{(item.subjects?.length ?? 0) - 4}
                         </span>
-                      ))}
+                      )}
                     </div>
                   </div>
                 </div>

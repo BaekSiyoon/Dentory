@@ -1,27 +1,27 @@
 package com.dentory.backend.dental;
-import java.util.List;
 
+import java.util.List;
 import com.dentory.backend.dental.dto.DentalHospitalResponse;
+import com.dentory.backend.dental.dto.DentalHospitalSubjectResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 @RequiredArgsConstructor
-
 // 치과 정보 조회
 public class DentalHospitalService {
 
     private final DentalHospitalRepository dentalHospitalRepository;
+    private final DentalHospitalSubjectRepository dentalHospitalSubjectRepository;
 
     // 사용중인 치과 목록 조회
     public List<DentalHospitalResponse> getDentalHospitals() {
         return dentalHospitalRepository.findAllByActiveTrue()
                 .stream()
-                .map(DentalHospitalResponse::new)
+                .map(this::createDentalHospitalResponse)
                 .toList();
     }
 
@@ -39,7 +39,7 @@ public class DentalHospitalService {
                         radius,
                         PageRequest.of(page, size)
                 )
-                .map(DentalHospitalResponse::new);
+                .map(this::createDentalHospitalResponse);
     }
 
     // 지역, 전문의 조건으로 치과 검색
@@ -55,7 +55,7 @@ public class DentalHospitalService {
                         specialistOnly,
                         PageRequest.of(page, size)
                 )
-                .map(DentalHospitalResponse::new);
+                .map(this::createDentalHospitalResponse);
     }
 
     // 치과 상세 조회
@@ -67,6 +67,19 @@ public class DentalHospitalService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("치과 정보를 찾을 수 없습니다."));
 
-        return new DentalHospitalResponse(hospital);
+        return createDentalHospitalResponse(hospital);
+    }
+
+    // 치과 정보와 병원별 진료과목을 함께 응답으로 변환
+    private DentalHospitalResponse createDentalHospitalResponse(
+            DentalHospital hospital
+    ) {
+        List<DentalHospitalSubjectResponse> subjects =
+                dentalHospitalSubjectRepository.findByDentalHospitalId(hospital.getId())
+                        .stream()
+                        .map(DentalHospitalSubjectResponse::new)
+                        .toList();
+
+        return new DentalHospitalResponse(hospital, subjects);
     }
 }
