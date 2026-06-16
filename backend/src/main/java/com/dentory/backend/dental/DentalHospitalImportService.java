@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
-
 // 치과 데이터 저장
 public class DentalHospitalImportService {
 
@@ -36,7 +35,6 @@ public class DentalHospitalImportService {
 
         do {
             String responseBody = callHospitalApi(pageNo, numOfRows);
-            // System.out.println("병원 응답 = " + responseBody);
 
             if (!responseBody.trim().startsWith("{")) {
                 throw new IllegalStateException("JSON 응답이 아닙니다: " + responseBody);
@@ -128,7 +126,10 @@ public class DentalHospitalImportService {
 
     // API 응답 1건 저장
     private void saveDentalHospitalItem(JsonNode item) {
-        String hospitalCode = item.path("ykiho").asText();
+        // ykiho는 심평원 상세 API 조회에 사용할 수 있는 암호화된 요양기호
+        String encryptedYkiho = item.path("ykiho").asText();
+
+        String hospitalCode = encryptedYkiho;
         String name = item.path("yadmNm").asText();
         String address = item.path("addr").asText();
         String phone = item.path("telno").asText();
@@ -136,7 +137,7 @@ public class DentalHospitalImportService {
         Double longitude = getDoubleValue(item, "XPos");
         Double latitude = getDoubleValue(item, "YPos");
 
-        if (hospitalCode == null || hospitalCode.isBlank()) {
+        if (encryptedYkiho == null || encryptedYkiho.isBlank()) {
             return;
         }
 
@@ -148,6 +149,7 @@ public class DentalHospitalImportService {
         DentalHospital dentalHospital = new DentalHospital();
 
         dentalHospital.setHospitalCode(hospitalCode);
+        dentalHospital.setEncryptedYkiho(encryptedYkiho); // 상세 API 호출용 식별값 저장
         dentalHospital.setName(name);
         dentalHospital.setAddress(address);
         dentalHospital.setPhone(phone);

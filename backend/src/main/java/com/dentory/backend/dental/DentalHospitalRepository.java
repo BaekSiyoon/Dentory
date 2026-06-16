@@ -1,6 +1,7 @@
 package com.dentory.backend.dental;
-import java.util.Optional;
+
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,9 @@ public interface DentalHospitalRepository extends JpaRepository<DentalHospital, 
 
     // 사용중인 치과 조회
     List<DentalHospital> findAllByActiveTrue();
+
+    // 상세 API 호출용 요양기호가 있는 치과만 조회
+    List<DentalHospital> findAllByActiveTrueAndEncryptedYkihoIsNotNull();
 
     // 상세 페이지 치과 단건 조회
     // 삭제되지 않고 사용중인(active=true) 치과만 조회
