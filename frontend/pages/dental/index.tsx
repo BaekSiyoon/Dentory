@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import MainMenu from "../components/mainMenu";
-import KakaoMap from "../components/dentalInfo/kakaoMap";
+import MainMenu from "../../components/mainMenu";
+import KakaoMap from "../../components/dentalInfo/kakaoMap";
 
 interface DentalSubject {
   subjectCode: string;
