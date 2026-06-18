@@ -1,8 +1,11 @@
 package com.dentory.backend.dental;
 
 import java.util.List;
+
 import com.dentory.backend.dental.dto.DentalHospitalResponse;
 import com.dentory.backend.dental.dto.DentalHospitalSubjectResponse;
+import com.dentory.backend.region.Region;
+import com.dentory.backend.region.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +19,7 @@ public class DentalHospitalService {
 
     private final DentalHospitalRepository dentalHospitalRepository;
     private final DentalHospitalSubjectRepository dentalHospitalSubjectRepository;
+    private final RegionRepository regionRepository;
 
     // 사용중인 치과 목록 조회
     public List<DentalHospitalResponse> getDentalHospitals() {
@@ -45,13 +49,26 @@ public class DentalHospitalService {
     // 지역, 전문의 조건으로 치과 검색
     @Transactional(readOnly = true)
     public Page<DentalHospitalResponse> searchDentals(
-            String regionName,
+            String regionCode,
             boolean specialistOnly,
             int page,
             int size
     ) {
+        String sidoName = null;
+        String sigunguName = null;
+
+        if (regionCode != null && !regionCode.isBlank()) {
+            Region region = regionRepository.findByRegionCode(regionCode)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("지역 정보를 찾을 수 없습니다."));
+
+            sidoName = region.getSidoName();
+            sigunguName = region.getSigunguName();
+        }
+
         return dentalHospitalRepository.searchDentals(
-                        regionName,
+                        sidoName,
+                        sigunguName,
                         specialistOnly,
                         PageRequest.of(page, size)
                 )

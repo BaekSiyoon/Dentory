@@ -44,13 +44,13 @@ public class DentalHospitalController {
     // 지역, 전문의 조건으로 치과 검색
     @GetMapping("/search")
     public Page<DentalHospitalResponse> searchDentals(
-            @RequestParam(required = false) String regionName,
+            @RequestParam(required = false) String regionCode,
             @RequestParam(defaultValue = "false") boolean specialistOnly,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         return dentalHospitalService.searchDentals(
-                regionName,
+                regionCode,
                 specialistOnly,
                 page,
                 size

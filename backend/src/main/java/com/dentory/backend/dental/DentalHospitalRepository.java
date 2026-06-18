@@ -31,11 +31,22 @@ public interface DentalHospitalRepository extends JpaRepository<DentalHospital, 
             SELECT dh
             FROM DentalHospital dh
             WHERE dh.active = true
-            AND (:regionName IS NULL OR dh.address LIKE %:regionName%)
-            AND (:specialistOnly = false OR dh.specialist = true)
+            AND (
+                :sidoName IS NULL
+                OR dh.address LIKE CONCAT('%', :sidoName, '%')
+            )
+            AND (
+                :sigunguName IS NULL
+                OR dh.address LIKE CONCAT('%', :sigunguName, '%')
+            )
+            AND (
+                :specialistOnly = false
+                OR dh.specialist = true
+            )
             """)
     Page<DentalHospital> searchDentals(
-            @Param("regionName") String regionName,
+            @Param("sidoName") String sidoName,
+            @Param("sigunguName") String sigunguName,
             @Param("specialistOnly") boolean specialistOnly,
             Pageable pageable
     );

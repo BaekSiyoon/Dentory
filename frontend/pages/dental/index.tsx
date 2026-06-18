@@ -7,6 +7,7 @@ interface DentalSubject {
   subjectCode: string;
   subjectName: string;
 }
+
 interface DentalData {
   id: number;
   name: string;
@@ -18,6 +19,7 @@ interface DentalData {
   openNow?: boolean;
   subjects?: DentalSubject[];
 }
+
 interface DentalPageResponse {
   content: DentalData[];
   totalElements: number;
@@ -228,20 +230,6 @@ const DentalInfo = () => {
     setCurrentPage(0);
   };
 
-  const getSelectedRegionName = (value: string) => {
-    if (value === "전체") {
-      return null;
-    }
-
-    const selectedRegion = regions.find((region) => region.regionCode === value);
-
-    if (!selectedRegion) {
-      return null;
-    }
-
-    return selectedRegion.displayName.split(" ").pop() ?? null;
-  };
-
   const fetchNearbyDentals = (page: number, lat: number, lng: number) => {
     setSearchMode("nearby");
 
@@ -259,7 +247,7 @@ const DentalInfo = () => {
 
   const fetchSearchDentals = (
     page: number,
-    regionName: string | null,
+    regionCode: string,
     onlySpecialist: boolean
   ) => {
     setSearchMode("search");
@@ -270,8 +258,8 @@ const DentalInfo = () => {
       specialistOnly: String(onlySpecialist),
     });
 
-    if (regionName) {
-      params.append("regionName", regionName);
+    if (regionCode !== "전체") {
+      params.append("regionCode", regionCode);
     }
 
     fetch(`http://localhost:8080/api/dentals/search?${params.toString()}`)
@@ -279,7 +267,7 @@ const DentalInfo = () => {
       .then((result: DentalPageResponse) => {
         updatePageData(result);
 
-        if (locationDenied && regionName) {
+        if (locationDenied && regionCode !== "전체") {
           setSearchedByRegion(true);
         }
       })
@@ -293,10 +281,8 @@ const DentalInfo = () => {
     nextSpecialistOnly = specialistOnly,
     nextRegionValue = regionValue
   ) => {
-    const regionName = getSelectedRegionName(nextRegionValue);
-
     console.log("검색 조건", {
-      regionName,
+      regionCode: nextRegionValue === "전체" ? null : nextRegionValue,
       treatmentCategoryId:
         treatmentValue === "전체" ? null : Number(treatmentValue),
       treatmentTime: timeValue === "ALL" ? null : timeValue,
@@ -304,15 +290,15 @@ const DentalInfo = () => {
     });
 
     // 위치 거부 상태에서 지역을 전체로 검색하면 안내 상태로 되돌림
-    if (locationDenied && !regionName) {
+    if (locationDenied && nextRegionValue === "전체") {
       resetPageData();
       setSearchMode("search");
       setSearchedByRegion(false);
       return;
     }
 
-    if (regionName || nextSpecialistOnly) {
-      fetchSearchDentals(page, regionName, nextSpecialistOnly);
+    if (nextRegionValue !== "전체" || nextSpecialistOnly) {
+      fetchSearchDentals(page, nextRegionValue, nextSpecialistOnly);
       return;
     }
 
@@ -454,7 +440,7 @@ const DentalInfo = () => {
     }
 
     if (searchMode === "search") {
-      fetchSearchDentals(page, getSelectedRegionName(regionValue), specialistOnly);
+      fetchSearchDentals(page, regionValue, specialistOnly);
     } else if (latitude != null && longitude != null) {
       fetchNearbyDentals(page, latitude, longitude);
     }
@@ -732,7 +718,11 @@ const DentalInfo = () => {
                     : "cursor-pointer border-[#EEE4D5] text-[#5A4033] hover:border-[#FCBF5D]"
                 }`}
               >
-                <svg className="h-3 w-3 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
+                <svg
+                  className="h-3 w-3 md:h-5 md:w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
                   <path
                     d="M15 6L9 12L15 18"
                     stroke="currentColor"
@@ -772,7 +762,11 @@ const DentalInfo = () => {
                     : "cursor-pointer border-[#EEE4D5] text-[#5A4033] hover:border-[#FCBF5D]"
                 }`}
               >
-                <svg className="h-3 w-3 md:h-5 md:w-5" viewBox="0 0 24 24" fill="none">
+                <svg
+                  className="h-3 w-3 md:h-5 md:w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
                   <path
                     d="M9 6L15 12L9 18"
                     stroke="currentColor"
